@@ -44,11 +44,16 @@ export default function DashboardPage() {
                 background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))',
               }}
             >
-              {user?.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+             {(user?.name || user?.email || 'U')
+              .split(' ')
+              .map((n) => n[0])
+              .join('')
+              .slice(0, 2)
+              .toUpperCase()}
             </div>
             <div>
               <h1 className="font-display" style={{ fontSize: 'var(--text-2xl)' }}>
-                Welcome back, {user?.name.split(' ')[0]}! 👋
+                Welcome back, {(user?.name || user?.email || 'User').split(' ')[0]}! 👋
               </h1>
               <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginTop: 4 }}>
                 {user?.branch} · Year {user?.year}

@@ -1,96 +1,201 @@
-import { createContext, useContext, useState } from 'react';
+
+import { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '../lib/supabase';
 
 const AuthContext = createContext(null);
 
-// Mock student data — simulates logged-in student
-const MOCK_STUDENT = {
-  id: 'stu-001',
-  name: 'Ishita Rajput',
-  email: 'ishita.rajput@thapar.edu',
-  branch: 'Computer Science & Engineering',
-  year: 3,
-  reliabilityScore: 87,
-  avatar: null,
-  coursesTaken: ['CS301', 'CS302', 'CS201', 'MA101'],
-  skills: ['Python', 'React', 'Machine Learning'],
-  requestsSent: 4,
-  requestsReceived: 0,
-};
-
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [step, setStep] = useState('email'); // 'email' | 'otp' | 'profile'
+  const [step, setStep] = useState('email');
   const [pendingEmail, setPendingEmail] = useState('');
+  
+  
+const [authLoading, setAuthLoading] = useState(true);
 
-  // Simulate sending OTP — always succeeds for @thapar.edu
-  const sendOtp = (email) => {
-    if (!email.endsWith('@thapar.edu')) {
-      throw new Error('Please use your Thapar college email (@thapar.edu)');
+useEffect(() => {
+  let mounted = true;
+
+  const loadUser = async () => {
+    const { data: { session }, error } =
+      await supabase.auth.getSession();
+
+    if (!mounted) return;
+
+    if (error) {
+      console.error('Session restore error:', error.message);
     }
-    setPendingEmail(email);
+
+    if (session?.user) {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, name, branch, year, bio, created_at')
+        .eq('id', session.user.id)
+        .maybeSingle();
+
+      if (!profileError && mounted) {
+        setUser({
+          id: session.user.id,
+          email: session.user.email,
+          ...(profile || {}),
+        });
+      }
+    }
+
+    if (mounted) setAuthLoading(false);
+  };
+
+  loadUser();
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      setUser(null);
+    } else if (session?.user) {
+      setUser((previous) => ({
+        ...previous,
+        id: session.user.id,
+        email: session.user.email,
+      }));
+    }
+
+    setAuthLoading(false);
+  });
+
+  return () => {
+    mounted = false;
+    subscription.unsubscribe();
+  };
+}, []);
+
+  const sendOtp = async (email) => {
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!/^[^\s@]+@thapar\.edu$/.test(normalizedEmail)) {
+      throw new Error('Please use your Thapar college email (@thapar.edu).');
+    }
+
+    const { error } = await supabase.auth.signInWithOtp({
+      email: normalizedEmail,
+      options: {
+        shouldCreateUser: true,
+      },
+    });
+
+    if (error) throw error;
+
+    setPendingEmail(normalizedEmail);
     setStep('otp');
-    // The "OTP" is always 123456 in simulation
-    return { mockOtp: '123456' };
   };
 
-  // Verify OTP — accepts '123456'
-  const verifyOtp = (otp) => {
-    if (otp === '123456') {
-      setStep('profile');
-      return true;
-    }
-    throw new Error('Invalid OTP. Use 123456 for this demo.');
-  };
-
-  // Complete registration
-  const completeRegistration = (profileData) => {
-    const newUser = {
-      ...MOCK_STUDENT,
+  const verifyOtp = async (otp) => {
+    const { data, error } = await supabase.auth.verifyOtp({
       email: pendingEmail,
-      name: profileData.name || MOCK_STUDENT.name,
-      branch: profileData.branch || MOCK_STUDENT.branch,
-      year: profileData.year || MOCK_STUDENT.year,
+      token: otp.trim(),
+      type: 'email',
+    });
+
+    if (error) throw error;
+    if (!data.user) {
+      throw new Error('Verification failed. Please try again.');
+    }
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, name, branch, year, bio, created_at')
+      .eq('id', data.user.id)
+      .maybeSingle();
+
+    if (profileError) throw profileError;
+
+    setUser({
+      id: data.user.id,
+      email: data.user.email,
+      ...(profile || {}),
+    });
+
+    setStep('profile');
+  };
+
+  const completeRegistration = async (profileData) => {
+    const {
+      data: { user: authUser },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError) throw authError;
+    if (!authUser) throw new Error('Please verify your email again.');
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .upsert(
+        {
+          id: authUser.id,
+          name: profileData.name.trim(),
+          branch: profileData.branch,
+          year: Number(profileData.year),
+        },
+        { onConflict: 'id' }
+      )
+      .select('id, name, branch, year, bio, created_at')
+      .single();
+
+    if (error) throw error;
+
+    const newUser = {
+      id: authUser.id,
+      email: authUser.email,
+      ...data,
     };
+
     setUser(newUser);
-    setStep('email');
     return newUser;
   };
 
-  // Direct login (skip to logged-in state for demo)
-  const demoLogin = () => {
-    setUser(MOCK_STUDENT);
-  };
+  const logout = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
 
-  const logout = () => {
     setUser(null);
-    setStep('email');
     setPendingEmail('');
+    setStep('email');
   };
 
   const updateUser = (updates) => {
-    setUser(prev => ({ ...prev, ...updates }));
+    setUser((previous) =>
+      previous ? { ...previous, ...updates } : previous
+    );
   };
 
+  const backToEmail = () => setStep('email');
+
   return (
-    <AuthContext.Provider value={{
-      user,
-      step,
-      pendingEmail,
-      isAuthenticated: !!user,
-      sendOtp,
-      verifyOtp,
-      completeRegistration,
-      demoLogin,
-      logout,
-      updateUser,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        step,
+        pendingEmail,
+        isAuthenticated: !!user,
+        sendOtp,
+        verifyOtp,
+        completeRegistration,
+        logout,
+        updateUser,
+        backToEmail,
+        authLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
-  return ctx;
+  const context = useContext(AuthContext);
+
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+
+  return context;
 }

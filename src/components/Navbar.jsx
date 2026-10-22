@@ -7,11 +7,15 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+  try {
+    await logout();
     navigate('/');
     setMenuOpen(false);
-  };
+  } catch (error) {
+    console.error('Logout failed:', error.message);
+  }
+};
 
   const navLinks = isAuthenticated
     ? [
@@ -62,9 +66,16 @@ export default function Navbar() {
                   className="avatar-placeholder avatar-sm"
                   style={{ background: `hsl(230, 70%, 58%)`, fontSize: '0.7rem' }}
                 >
-                  {user.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                  {(user?.name || user?.email || 'U')
+                    .split(' ')
+                    .map((n) => n[0])
+                    .join('')
+                    .slice(0, 2)
+                    .toUpperCase()}
                 </div>
-                <span className="navbar-username">{user.name.split(' ')[0]}</span>
+                <span className="navbar-username">
+                  {(user?.name || user?.email || 'User').split(' ')[0]}
+                </span>
               </Link>
               <button className="btn btn-ghost btn-sm" onClick={handleLogout}>
                 Logout

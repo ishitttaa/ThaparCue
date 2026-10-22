@@ -12,8 +12,14 @@ const BRANCHES = [
 ];
 
 export default function LoginPage() {
-  const { step, sendOtp, verifyOtp, completeRegistration, demoLogin } = useAuth();
-  const navigate = useNavigate();
+ const {
+  step,
+  sendOtp,
+  verifyOtp,
+  completeRegistration,
+  backToEmail
+  } = useAuth();
+ const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -24,54 +30,73 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showOtpHint, setShowOtpHint] = useState(false);
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      sendOtp(email);
-      setShowOtpHint(true);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+const handleSendOtp = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-  const handleVerifyOtp = async (e) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-    try {
-      verifyOtp(otp);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    await sendOtp(email);
+    setShowOtpHint(true);
+  } catch (err) {
+    setError(err.message || 'Failed to send OTP. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
-  const handleComplete = async (e) => {
-    e.preventDefault();
-    setError('');
-    if (!name.trim()) { setError('Please enter your name.'); return; }
-    if (!branch) { setError('Please select your branch.'); return; }
-    if (!year) { setError('Please select your year.'); return; }
-    setLoading(true);
-    try {
-      completeRegistration({ name, branch, year: Number(year) });
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+const handleVerifyOtp = async (e) => {
+  e.preventDefault();
+  setError('');
+  setLoading(true);
 
-  const handleDemo = () => {
-    demoLogin();
+  try {
+    await verifyOtp(otp);
+  } catch (err) {
+    setError(err.message || 'Invalid OTP. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  
+const handleComplete = async (e) => {
+  e.preventDefault();
+  setError('');
+
+  if (!name.trim()) {
+    setError('Please enter your name.');
+    return;
+  }
+
+  if (!branch) {
+    setError('Please select your branch.');
+    return;
+  }
+
+  if (!year) {
+    setError('Please select your year.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    await completeRegistration({
+      name,
+      branch,
+      year: Number(year),
+    });
+
     navigate('/dashboard');
-  };
+  } catch (err) {
+    setError(err.message || 'Could not save your profile.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const stepIndex = step === 'email' ? 0 : step === 'otp' ? 1 : 2;
 
@@ -129,12 +154,8 @@ export default function LoginPage() {
               <button type="submit" className="btn btn-primary w-full btn-lg" disabled={loading}>
                 {loading ? <span className="spinner" /> : 'Send OTP'}
               </button>
-              <div className="login-divider">
-                <span className="text-muted">or</span>
-              </div>
-              <button type="button" className="btn btn-secondary w-full" onClick={handleDemo}>
-                🚀 Try Demo Login (skip email)
-              </button>
+          
+            
             </form>
           )}
 
@@ -144,7 +165,7 @@ export default function LoginPage() {
               <h2 className="font-display login-form-title">Verify your email</h2>
               {showOtpHint && (
                 <div className="login-hint">
-                  📬 OTP sent! For this demo, use: <strong>123456</strong>
+                  📬 Check your Thapar email for the verification code.
                 </div>
               )}
               <div className="form-group">
@@ -163,8 +184,15 @@ export default function LoginPage() {
               <button type="submit" className="btn btn-primary w-full btn-lg" disabled={loading || otp.length < 6}>
                 {loading ? <span className="spinner" /> : 'Verify OTP'}
               </button>
-              <button type="button" className="btn btn-ghost w-full" style={{ marginTop: 'var(--space-2)' }}
-                onClick={() => { setError(''); }}>
+              <button
+                type="button"
+                className="btn btn-ghost w-full"
+                style={{ marginTop: 'var(--space-2)' }}
+                onClick={() => {
+                  setError('');
+                  backToEmail();
+                }}
+              >
                 ← Back to email
               </button>
             </form>
