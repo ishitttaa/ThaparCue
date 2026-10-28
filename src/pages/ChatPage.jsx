@@ -69,7 +69,7 @@ export default function ChatPage() {
       setMessages(messageData || []);
     } catch (err) {
       console.error('Chat load error:', err);
-      setError(err.message || 'Chat load nahi ho paayi.');
+      setError(err.message || 'This chat is unavailable.');
     } finally {
       setLoading(false);
     }
