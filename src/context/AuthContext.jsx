@@ -1,215 +1,100 @@
-
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../lib/supabase';
+import { getMyProfile } from '../services/profiles';
 
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [step, setStep] = useState('email');
-  const [pendingEmail, setPendingEmail] = useState('');
-  
-  
-const [authLoading, setAuthLoading] = useState(true);
+  const queryClient = useQueryClient();
+  const [session, setSession] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
 
-useEffect(() => {
-  let mounted = true;
+  // ── 1. Session: Supabase hi token store/refresh karta hai, hum sirf sunte hain ──
+  useEffect(() => {
+    let mounted = true;
 
-  const loadUser = async () => {
-    const { data: { session }, error } =
-      await supabase.auth.getSession();
-
-    if (!mounted) return;
-
-    if (error) {
-      console.error('Session restore error:', error.message);
-    }
-
-    
-    if (session?.user) {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('id, name, branch, year, bio, created_at')
-        .eq('id', session.user.id)
-        .maybeSingle();
-
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
       if (!mounted) return;
 
-      if (profileError) {
-        console.error('Profile restore error:', profileError.message);
-      } else if (profile) {
-        setUser({
-          ...profile,
-          id: session.user.id,
-          email: session.user.email,
-        });
-        setStep('dashboard');
-      } else {
-        setUser({
-          id: session.user.id,
-          email: session.user.email,
-        });
-        setStep('profile');
+      // Callback ke andar sirf state set karo. Yahan await ya koi doosra
+      // Supabase call mat daalo (deadlock ho sakta hai).
+      setSession(newSession);
+      setAuthLoading(false);
+
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear(); // agle user ko purana cached data na dikhe
+        setTimeout(() => supabase.removeAllChannels(), 0);
       }
-    }
-
-
-    if (mounted) setAuthLoading(false);
-  };
-
-  loadUser();
-
-  
-const {
-  data: { subscription },
-} = supabase.auth.onAuthStateChange((event, session) => {
-  if (event === 'SIGNED_OUT') {
-    setUser(null);
-    setPendingEmail('');
-    setStep('email');
-  } else if (event === 'SIGNED_IN' && session?.user) {
-    // verifyOtp profile check karke step decide karega.
-    setUser((previous) => ({
-      ...previous,
-      id: session.user.id,
-      email: session.user.email,
-    }));
-  }
-
-  setAuthLoading(false);
-});
-
-
-  return () => {
-    mounted = false;
-    subscription.unsubscribe();
-  };
-}, []);
-
-  const sendOtp = async (email) => {
-    const normalizedEmail = email.trim().toLowerCase();
-
-    
-    if (!/^[^\s@]+@thapar\.edu$/.test(normalizedEmail)) {
-    throw new Error('Please use your Thapar college email (@thapar.edu).');
-  }
-
-
-    const { error } = await supabase.auth.signInWithOtp({
-      email: normalizedEmail,
-      options: {
-        shouldCreateUser: true,
-      },
     });
 
-    if (error) throw error;
+    // Purane supabase-js versions INITIAL_SESSION nahi bhejte, unke liye fallback
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return;
+      if (error) console.error('Session restore error:', error.message);
+      setSession((current) => current ?? data.session);
+      setAuthLoading(false);
+    });
 
-    setPendingEmail(normalizedEmail);
-    setStep('otp');
-  };
-
-  
-const verifyOtp = async (otp) => {
-  const { data, error } = await supabase.auth.verifyOtp({
-    email: pendingEmail,
-    token: otp.trim(),
-    type: 'email',
-  });
-
-  if (error) throw error;
-
-  if (!data.user) {
-    throw new Error('Verification failed. Please try again.');
-  }
-
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('id, name, branch, year, bio, created_at')
-    .eq('id', data.user.id)
-    .maybeSingle();
-
-  if (profileError) throw profileError;
-
-  setUser({
-    id: data.user.id,
-    email: data.user.email,
-    ...(profile || {}),
-  });
-
-  if (profile) {
-    setStep('dashboard');
-  } else {
-    setStep('profile');
-  }
-};
-
-  const completeRegistration = async (profileData) => {
-    const {
-      data: { user: authUser },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError) throw authError;
-    if (!authUser) throw new Error('Please verify your email again.');
-
-    const { data, error } = await supabase
-      .from('profiles')
-      .upsert(
-        {
-          id: authUser.id,
-          name: profileData.name.trim(),
-          branch: profileData.branch,
-          year: Number(profileData.year),
-        },
-        { onConflict: 'id' }
-      )
-      .select('id, name, branch, year, bio, created_at')
-      .single();
-
-    if (error) throw error;
-
-    const newUser = {
-      id: authUser.id,
-      email: authUser.email,
-      ...data,
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
     };
+  }, [queryClient]);
 
-    setUser(newUser);
-    setStep('dashboard');
-    return newUser;
-  };
+  // ── 2. Profile: React Query se, cache ke saath ──
+  const userId = session?.user?.id ?? null;
+  const authEmail = session?.user?.email ?? null;
 
-  const logout = async () => {
+  const profileQuery = useQuery({
+    queryKey: ['profile', userId],
+    queryFn: () => getMyProfile(userId),
+    enabled: !!userId,
+    staleTime: 5 * 60_000,
+  });
+
+  const profile = profileQuery.data ?? null;
+  const profileLoading = !!userId && profileQuery.isPending;
+  const profileError = !!userId && profileQuery.isError && !profile;
+  const { refetch: refetchProfile } = profileQuery;
+
+  // ── 3. `user` ka shape purane code jaisa: { id, email, name, branch, year, bio, ... } ──
+  const user = useMemo(
+    () => (userId ? { id: userId, email: authEmail, ...(profile ?? {}) } : null),
+    [userId, authEmail, profile]
+  );
+
+  const updateUser = useCallback(
+    (updates) => {
+      if (!userId) return;
+      queryClient.setQueryData(['profile', userId], (previous) =>
+        previous ? { ...previous, ...updates } : previous
+      );
+    },
+    [queryClient, userId]
+  );
+
+  const logout = useCallback(async () => {
     const { error } = await supabase.auth.signOut();
     if (error) throw error;
-
-    setUser(null);
-    setPendingEmail('');
-    setStep('email');
-  };
-
-  const updateUser = (updates) => {
-    setUser((previous) =>
-      previous ? { ...previous, ...updates } : previous
-    );
-  };
-
-  const backToEmail = () => setStep('email');
+    // cache clear + channels cleanup SIGNED_OUT event par ho jaata hai
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
+        session,
         user,
-        step,
-        pendingEmail,
-        isAuthenticated: !!user,
-        sendOtp,
-        verifyOtp,
-        completeRegistration,
-        logout,
-        updateUser,
-        backToEmail,
+        profile,
+        isAuthenticated: !!session,
         authLoading,
+        profileLoading,
+        profileError,
+        refetchProfile,
+        updateUser,
+        logout,
       }}
     >
       {children}
