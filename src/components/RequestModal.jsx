@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
 import { COURSES } from '../data/mockCourses';
-import { TOPIC_OPTIONS, addInteraction } from '../data/mockInteractions';
+import { TOPIC_OPTIONS } from '../data/mockInteractions';
 import { useAuth } from '../context/AuthContext';
 
 export default function RequestModal({ senior, onClose }) {
@@ -13,53 +14,88 @@ export default function RequestModal({ senior, onClose }) {
   const [step, setStep] = useState('form'); // 'form' | 'success'
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!topic) { setError('Please select a topic.'); return; }
-    if (!message.trim() || message.trim().length < 20) {
-      setError('Please write at least 20 characters.');
+
+const [loading, setLoading] = useState(false);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+
+  if (!user?.id) {
+    setError('Please log in again before sending a request.');
+    return;
+  }
+
+  if (!senior?.id || senior.id === user.id) {
+    setError('You cannot send a request to this profile.');
+    return;
+  }
+
+  if (!topic) {
+    setError('Please select a topic.');
+    return;
+  }
+
+  if (!message.trim() || message.trim().length < 20) {
+    setError('Please write at least 20 characters.');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const { data: existing, error: lookupError } = await supabase
+      .from('requests')
+      .select('id, status')
+      .eq('from_user', user.id)
+      .eq('to_user', senior.id)
+      .in('status', ['pending', 'accepted'])
+      .maybeSingle();
+
+    if (lookupError) throw lookupError;
+
+    if (existing) {
+      setError(
+        existing.status === 'accepted'
+          ? 'You are already connected with this student.'
+          : 'You already have a pending request to this student.'
+      );
       return;
     }
 
-    const newId = `int-${Date.now()}`;
-    const selectedCourse = COURSES.find((c) => c.id === courseId);
     const selectedTopic = TOPIC_OPTIONS.find((t) => t.value === topic);
+    const requestMessage = [
+      `Topic: ${selectedTopic?.label || topic}`,
+      courseId ? `Course ID: ${courseId}` : '',
+      message.trim(),
+    ].filter(Boolean).join('\n\n');
 
-    const interaction = {
-      id: newId,
-      requestId: `req-${Date.now()}`,
-      senderId: user?.id || 'stu-001',
-      receiverId: senior.id,
-      seniorName: senior.name,
-      seniorInitials: senior.initials,
-      seniorColorHue: senior.colorHue,
-      topic: topic,
-      topicLabel: selectedTopic?.label || topic,
-      courseId: courseId || null,
-      courseName: selectedCourse?.shortName || null,
-      purpose: message.trim(),
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      messages: [
-        {
-          id: `msg-${Date.now()}`,
-          senderId: user?.id || 'stu-001',
-          text: message.trim(),
-          sentAt: new Date().toISOString(),
-        },
-      ],
-      rating: null,
-      isRated: false,
-    };
+    const { error: insertError } = await supabase
+      .from('requests')
+      .insert({
+        from_user: user.id,
+        to_user: senior.id,
+        message: requestMessage,
+        status: 'pending',
+      })
+      .select('id')
+      .single();
 
-    addInteraction(interaction);
+    if (insertError) throw insertError;
+
     setStep('success');
 
     setTimeout(() => {
       onClose();
-      navigate(`/inbox/${newId}`);
-    }, 1800);
-  };
+      navigate('/inbox');
+    }, 1500);
+  } catch (err) {
+    console.error('Request submission failed:', err);
+    setError(err.message || 'Could not send request. Please try again.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
@@ -167,8 +203,12 @@ export default function RequestModal({ senior, onClose }) {
               <button type="button" className="btn btn-ghost" onClick={onClose}>
                 Cancel
               </button>
-              <button type="submit" className="btn btn-primary">
-                Send Request
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={loading}
+              >
+                {loading ? 'Sending...' : 'Send Request'}
               </button>
             </div>
           </form>

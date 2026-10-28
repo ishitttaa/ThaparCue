@@ -1,183 +1,405 @@
-import { useState, useRef, useEffect } from 'react';
+
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { addMessage, submitRating, INTERACTIONS } from '../data/mockInteractions';
+import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
 
 export default function ChatPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const userId = user?.id || 'stu-001';
 
-  // Re-derive interaction from module-level array each render
-  const interaction = INTERACTIONS.find((i) => i.id === id);
-
+  const [request, setRequest] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [reply, setReply] = useState('');
+  const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
-  const [showRating, setShowRating] = useState(false);
-  const [ratingVal, setRatingVal] = useState(0);
-  const [hoverStar, setHoverStar] = useState(0);
-  const [rated, setRated] = useState(interaction?.isRated || false);
-  const [, forceRender] = useState(0);
+  const [error, setError] = useState('');
 
   const bottomRef = useRef(null);
 
+  const loadChat = useCallback(async () => {
+    if (!user?.id || !id) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const { data: requestData, error: requestError } = await supabase
+        .from('requests')
+        .select(`
+          id,
+          from_user,
+          to_user,
+          message,
+          status,
+          created_at,
+          sender:profiles!requests_from_user_fkey(id, name, branch),
+          receiver:profiles!requests_to_user_fkey(id, name, branch)
+        `)
+        .eq('id', id)
+        .maybeSingle();
+
+      if (requestError) throw requestError;
+
+      if (
+        !requestData ||
+        ![requestData.from_user, requestData.to_user].includes(user.id) ||
+        requestData.status !== 'accepted'
+      ) {
+        setRequest(null);
+        setMessages([]);
+        setError('This chat is unavailable. Only accepted requests can be opened.');
+        return;
+      }
+
+      setRequest(requestData);
+
+      const { data: messageData, error: messageError } = await supabase
+        .from('messages')
+        .select('id, request_id, sender_id, content, created_at')
+        .eq('request_id', id)
+        .order('created_at', { ascending: true });
+
+      if (messageError) throw messageError;
+
+      setMessages(messageData || []);
+    } catch (err) {
+      console.error('Chat load error:', err);
+      setError(err.message || 'Chat load nahi ho paayi.');
+    } finally {
+      setLoading(false);
+    }
+  }, [id, user?.id]);
+
+  // Load the accepted conversation.
+  useEffect(() => {
+    loadChat();
+  }, [loadChat]);
+
+  // Redirect if this request stops being accepted.
+  useEffect(() => {
+    if (!user?.id || !id || !request) return;
+
+    let redirected = false;
+
+    const channel = supabase
+      .channel(`request-status-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'requests',
+          filter: `id=eq.${id}`,
+        },
+        (payload) => {
+          const updated = payload.new;
+
+          if (
+            updated.status !== 'accepted' ||
+            ![updated.from_user, updated.to_user].includes(user.id)
+          ) {
+            redirected = true;
+            setRequest(null);
+            setMessages([]);
+            navigate('/inbox', { replace: true });
+          } else {
+            setRequest((current) =>
+              current ? { ...current, ...updated } : current
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, user?.id, navigate, request?.id]);
+
+  // Receive new messages in real time.
+  useEffect(() => {
+    if (!user?.id || !id || !request) return;
+
+    const channel = supabase
+      .channel(`chat-${id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `request_id=eq.${id}`,
+        },
+        (payload) => {
+          const incoming = payload.new;
+
+          setMessages((current) => {
+            if (current.some((message) => message.id === incoming.id)) {
+              return current;
+            }
+
+            return [...current, incoming].sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime()
+            );
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [id, user?.id, request?.id]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [interaction?.messages?.length]);
+  }, [messages.length]);
 
-  if (!interaction) {
+  const handleSend = async () => {
+    const content = reply.trim();
+
+    if (!content || sending || !user?.id || !request) return;
+
+    setSending(true);
+    setError('');
+
+    try {
+      const { data, error: sendError } = await supabase
+        .from('messages')
+        .insert({
+          request_id: id,
+          sender_id: user.id,
+          content,
+        })
+        .select('id, request_id, sender_id, content, created_at')
+        .single();
+
+      if (sendError) throw sendError;
+
+      setMessages((current) => {
+        if (current.some((message) => message.id === data.id)) {
+          return current;
+        }
+
+        return [...current, data].sort(
+          (a, b) =>
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime()
+        );
+      });
+
+      setReply('');
+    } catch (err) {
+      console.error('Send message error:', err);
+      setError(err.message || 'Message send nahi ho paaya.');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const formatTime = (iso) => {
+    const date = new Date(iso);
+
+    return (
+      date.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      }) +
+      ' · ' +
+      date.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+      })
+    );
+  };
+
+  if (loading) {
     return (
       <div className="page-content">
         <div className="container empty-state">
-          <div className="empty-state-icon">💬</div>
-          <p className="empty-state-title">Conversation not found</p>
-          <button className="btn btn-primary" onClick={() => navigate('/inbox')}>Back to Inbox</button>
+          <p>Loading conversation...</p>
         </div>
       </div>
     );
   }
 
-  const formatTime = (iso) => {
-    const d = new Date(iso);
-    return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true }) +
-      ' · ' + d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short' });
-  };
+  if (error && !request) {
+    return (
+      <div className="page-content">
+        <div className="container empty-state">
+          <div className="empty-state-icon">💬</div>
+          <p className="empty-state-title">Conversation not available</p>
+          <p>{error}</p>
+          <button
+            className="btn btn-primary"
+            onClick={() => navigate('/inbox')}
+          >
+            Back to Inbox
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  const handleSend = () => {
-    if (!reply.trim()) return;
-    setSending(true);
-    const msg = {
-      id: `msg-${Date.now()}`,
-      senderId: userId,
-      text: reply.trim(),
-      sentAt: new Date().toISOString(),
-    };
-    addMessage(id, msg);
-    setReply('');
-    setSending(false);
-    forceRender((n) => n + 1);
-  };
+  if (!request || !user?.id) return null;
 
-  const handleRate = () => {
-    if (ratingVal === 0) return;
-    submitRating(id, { relevanceScore: ratingVal, appropriate: true });
-    setRated(true);
-    setShowRating(false);
-    forceRender((n) => n + 1);
-  };
+  const sentByMe = request.from_user === user.id;
+  const otherPerson = sentByMe ? request.receiver : request.sender;
 
-  const canRate = interaction.status === 'responded' && !rated && !interaction.isRated;
+  const initials = (otherPerson?.name || 'Student')
+    .split(' ')
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <div className="page-content" style={{ paddingBottom: 0 }}>
       <div className="chat-layout container">
-        {/* Chat header */}
         <div className="chat-header glass-card anim-fade-up">
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate('/inbox')}>← Inbox</button>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => navigate('/inbox')}
+          >
+            ← Inbox
+          </button>
+
           <div className="flex items-center gap-3" style={{ flex: 1 }}>
-            <div
-              className="avatar-placeholder avatar-md"
-              style={{
-                background: `linear-gradient(135deg, hsl(${interaction.seniorColorHue},70%,55%), hsl(${interaction.seniorColorHue + 40},70%,45%))`,
-                fontSize: '0.8rem',
-              }}
-            >
-              {interaction.seniorInitials}
+            <div className="avatar-placeholder avatar-md">
+              {initials}
             </div>
+
             <div>
-              <p style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>{interaction.seniorName}</p>
+              <p style={{ fontWeight: 700, fontSize: 'var(--text-base)' }}>
+                {otherPerson?.name || 'Student'}
+              </p>
+
               <div className="flex items-center gap-2">
-                <span className="badge badge-muted" style={{ fontSize: '0.65rem' }}>{interaction.topicLabel}</span>
-                {interaction.courseName && (
-                  <span className="badge badge-accent" style={{ fontSize: '0.65rem' }}>{interaction.courseName}</span>
+                {otherPerson?.branch && (
+                  <span className="badge badge-muted">
+                    {otherPerson.branch}
+                  </span>
                 )}
+                <span className="badge badge-success">accepted</span>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <span className={`badge ${interaction.status === 'responded' ? 'badge-success' : interaction.status === 'pending' ? 'badge-warning' : 'badge-muted'}`}>
-              {interaction.status}
-            </span>
-            <Link to={`/senior/${interaction.receiverId}`} className="btn btn-ghost btn-sm">
+
+          {otherPerson?.id && (
+            <Link
+              to={`/senior/${otherPerson.id}`}
+              className="btn btn-ghost btn-sm"
+            >
               View Profile
             </Link>
-          </div>
+          )}
         </div>
 
-        {/* Messages */}
-        <div className="chat-messages anim-fade-up" style={{ animationDelay: '0.1s' }}>
-          {/* Purpose / context bar */}
+        <div className="chat-messages anim-fade-up">
           <div className="chat-context-bar">
-            <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>Request context:</span>
-            <p style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginTop: 4 }}>
-              {interaction.purpose}
+            <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
+              Request context:
+            </span>
+            <p
+              style={{
+                fontSize: 'var(--text-sm)',
+                color: 'var(--text-secondary)',
+                marginTop: 4,
+              }}
+            >
+              {request.message || 'Skill-sharing conversation'}
             </p>
           </div>
 
-          {interaction.messages.map((msg) => {
-            const isMe = msg.senderId === userId;
+          {messages.length === 0 && (
+            <div className="empty-state">
+              <p>No messages yet. Start the conversation!</p>
+            </div>
+          )}
+
+          {messages.map((message) => {
+            const isMe = message.sender_id === user.id;
+
             return (
-              <div key={msg.id} className={`chat-bubble-wrap ${isMe ? 'chat-bubble-right' : 'chat-bubble-left'}`}>
+              <div
+                key={message.id}
+                className={`chat-bubble-wrap ${
+                  isMe ? 'chat-bubble-right' : 'chat-bubble-left'
+                }`}
+              >
                 {!isMe && (
                   <div
                     className="avatar-placeholder"
                     style={{
-                      width: 28, height: 28, fontSize: '0.6rem', flexShrink: 0,
-                      background: `linear-gradient(135deg, hsl(${interaction.seniorColorHue},70%,55%), hsl(${interaction.seniorColorHue + 40},70%,45%))`,
+                      width: 28,
+                      height: 28,
+                      fontSize: '0.6rem',
+                      flexShrink: 0,
                     }}
                   >
-                    {interaction.seniorInitials}
+                    {initials}
                   </div>
                 )}
-                <div className="flex-col" style={{ display: 'flex', maxWidth: '70%' }}>
-                  <div className={`chat-bubble ${isMe ? 'chat-bubble-me' : 'chat-bubble-them'}`}>
-                    {msg.text}
+
+                <div
+                  className="flex-col"
+                  style={{ display: 'flex', maxWidth: '70%' }}
+                >
+                  <div
+                    className={`chat-bubble ${
+                      isMe ? 'chat-bubble-me' : 'chat-bubble-them'
+                    }`}
+                  >
+                    {message.content}
                   </div>
-                  <span className={`chat-time ${isMe ? 'text-right' : ''} text-muted`}>
-                    {formatTime(msg.sentAt)}
+
+                  <span
+                    className={`chat-time ${
+                      isMe ? 'text-right' : ''
+                    } text-muted`}
+                  >
+                    {formatTime(message.created_at)}
                   </span>
                 </div>
               </div>
             );
           })}
 
-          {/* Rating prompt */}
-          {canRate && (
-            <div className="chat-rate-prompt glass-card">
-              <p style={{ fontWeight: 600, marginBottom: 'var(--space-2)' }}>
-                Was this guidance helpful?
-              </p>
-              <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
-                Rate your interaction with {interaction.seniorName}
-              </p>
-              <button className="btn btn-primary btn-sm" onClick={() => setShowRating(true)}>
-                Rate Interaction
-              </button>
-            </div>
-          )}
-
-          {(rated || interaction.isRated) && (
-            <div className="chat-rated-banner">
-              ✅ You rated this interaction — thank you for your feedback!
-            </div>
-          )}
-
           <div ref={bottomRef} />
         </div>
 
-        {/* Reply bar */}
-        <div className="chat-reply-bar glass-card anim-fade-up" style={{ animationDelay: '0.2s' }}>
+        {error && (
+          <p className="error-message" role="alert">
+            {error}
+          </p>
+        )}
+
+        <div
+          className="chat-reply-bar glass-card anim-fade-up"
+          style={{ animationDelay: '0.2s' }}
+        >
           <textarea
             className="form-input chat-reply-input"
             placeholder="Write your reply…"
             value={reply}
-            onChange={(e) => setReply(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+            onChange={(event) => setReply(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSend();
+              }
             }}
             rows={2}
           />
+
           <button
             className="btn btn-primary"
             onClick={handleSend}
@@ -187,42 +409,6 @@ export default function ChatPage() {
           </button>
         </div>
       </div>
-
-      {/* Rating Modal */}
-      {showRating && (
-        <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && setShowRating(false)}>
-          <div className="modal-box" style={{ textAlign: 'center' }}>
-            <h2 className="font-display" style={{ fontSize: 'var(--text-xl)', marginBottom: 'var(--space-2)' }}>
-              Rate your experience
-            </h2>
-            <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-6)' }}>
-              How relevant and helpful was the guidance from {interaction.seniorName}?
-            </p>
-            <div className="rating-stars">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <button
-                  key={star}
-                  className={`star-btn ${star <= (hoverStar || ratingVal) ? 'filled' : ''}`}
-                  onMouseEnter={() => setHoverStar(star)}
-                  onMouseLeave={() => setHoverStar(0)}
-                  onClick={() => setRatingVal(star)}
-                >
-                  ★
-                </button>
-              ))}
-            </div>
-            <p className="text-muted" style={{ fontSize: 'var(--text-sm)', marginTop: 'var(--space-3)' }}>
-              {ratingVal === 0 ? 'Select a rating' : ['', 'Not helpful', 'Somewhat helpful', 'Helpful', 'Very helpful', 'Extremely helpful'][ratingVal]}
-            </p>
-            <div className="flex gap-3" style={{ justifyContent: 'center', marginTop: 'var(--space-6)' }}>
-              <button className="btn btn-ghost" onClick={() => setShowRating(false)}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleRate} disabled={ratingVal === 0}>
-                Submit Rating
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -20,7 +20,14 @@ export default function LoginPage() {
   backToEmail
   } = useAuth();
  const navigate = useNavigate();
+ 
+useEffect(() => {
+  if (step === 'dashboard') {
+    navigate('/dashboard', { replace: true });
+  }
+}, [step, navigate]);
 
+ 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [name, setName] = useState('');
@@ -126,9 +133,11 @@ const handleComplete = async (e) => {
         </div>
 
         <div className="login-card glass-card">
+          <p style={{ color: 'white' }}>Current step: {step}</p>
           {error && (
             <div className="login-error">
               {error}
+              
             </div>
           )}
 

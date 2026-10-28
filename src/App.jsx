@@ -12,6 +12,8 @@ import SkillsPage from './pages/SkillsPage';
 import InboxPage from './pages/InboxPage';
 import ChatPage from './pages/ChatPage';
 import ProfilePage from './pages/ProfilePage';
+
+import './index.css';
 import './App.css';
 
 

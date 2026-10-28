@@ -25,6 +25,7 @@ useEffect(() => {
       console.error('Session restore error:', error.message);
     }
 
+    
     if (session?.user) {
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
@@ -32,35 +33,52 @@ useEffect(() => {
         .eq('id', session.user.id)
         .maybeSingle();
 
-      if (!profileError && mounted) {
+      if (!mounted) return;
+
+      if (profileError) {
+        console.error('Profile restore error:', profileError.message);
+      } else if (profile) {
+        setUser({
+          ...profile,
+          id: session.user.id,
+          email: session.user.email,
+        });
+        setStep('dashboard');
+      } else {
         setUser({
           id: session.user.id,
           email: session.user.email,
-          ...(profile || {}),
         });
+        setStep('profile');
       }
     }
+
 
     if (mounted) setAuthLoading(false);
   };
 
   loadUser();
 
-  const {
-    data: { subscription },
-  } = supabase.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_OUT') {
-      setUser(null);
-    } else if (session?.user) {
-      setUser((previous) => ({
-        ...previous,
-        id: session.user.id,
-        email: session.user.email,
-      }));
-    }
+  
+const {
+  data: { subscription },
+} = supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') {
+    setUser(null);
+    setPendingEmail('');
+    setStep('email');
+  } else if (event === 'SIGNED_IN' && session?.user) {
+    // verifyOtp profile check karke step decide karega.
+    setUser((previous) => ({
+      ...previous,
+      id: session.user.id,
+      email: session.user.email,
+    }));
+  }
 
-    setAuthLoading(false);
-  });
+  setAuthLoading(false);
+});
+
 
   return () => {
     mounted = false;
@@ -71,9 +89,11 @@ useEffect(() => {
   const sendOtp = async (email) => {
     const normalizedEmail = email.trim().toLowerCase();
 
+    
     if (!/^[^\s@]+@thapar\.edu$/.test(normalizedEmail)) {
-      throw new Error('Please use your Thapar college email (@thapar.edu).');
-    }
+    throw new Error('Please use your Thapar college email (@thapar.edu).');
+  }
+
 
     const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
@@ -88,34 +108,40 @@ useEffect(() => {
     setStep('otp');
   };
 
-  const verifyOtp = async (otp) => {
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: pendingEmail,
-      token: otp.trim(),
-      type: 'email',
-    });
+  
+const verifyOtp = async (otp) => {
+  const { data, error } = await supabase.auth.verifyOtp({
+    email: pendingEmail,
+    token: otp.trim(),
+    type: 'email',
+  });
 
-    if (error) throw error;
-    if (!data.user) {
-      throw new Error('Verification failed. Please try again.');
-    }
+  if (error) throw error;
 
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('id, name, branch, year, bio, created_at')
-      .eq('id', data.user.id)
-      .maybeSingle();
+  if (!data.user) {
+    throw new Error('Verification failed. Please try again.');
+  }
 
-    if (profileError) throw profileError;
+  const { data: profile, error: profileError } = await supabase
+    .from('profiles')
+    .select('id, name, branch, year, bio, created_at')
+    .eq('id', data.user.id)
+    .maybeSingle();
 
-    setUser({
-      id: data.user.id,
-      email: data.user.email,
-      ...(profile || {}),
-    });
+  if (profileError) throw profileError;
 
+  setUser({
+    id: data.user.id,
+    email: data.user.email,
+    ...(profile || {}),
+  });
+
+  if (profile) {
+    setStep('dashboard');
+  } else {
     setStep('profile');
-  };
+  }
+};
 
   const completeRegistration = async (profileData) => {
     const {
@@ -149,6 +175,7 @@ useEffect(() => {
     };
 
     setUser(newUser);
+    setStep('dashboard');
     return newUser;
   };
 
