@@ -32,3 +32,27 @@ export async function saveMyProfile(userId, { name, branch, year }) {
   if (error) throw error;
   return data;
 }
+const STUDENT_COLS = 'id, name, branch, year, bio';
+
+export async function getOtherProfiles(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(STUDENT_COLS)
+    .neq('id', userId)
+    .order('name');
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getProfileById(id) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select(STUDENT_COLS)
+    .eq('id', id)
+    .maybeSingle();
+  if (error) {
+    if (error.code === '22P02') return null; // URL mein galat id
+    throw error;
+  }
+  return data;
+}

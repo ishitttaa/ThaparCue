@@ -10,7 +10,7 @@ export default function SeniorCard({ senior, onRequest }) {
     reliabilityScore,
     responseRate,
     avgResponseTime,
-    skills,
+    skills = [],
     rating,
     totalInteractions,
     initials,
@@ -18,6 +18,9 @@ export default function SeniorCard({ senior, onRequest }) {
     bio,
   } = senior;
 
+  const hasStats = rating != null;
+  const isRealProfile =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   return (
     <div className="senior-card glass-card">
       <div className="senior-card-header">
@@ -44,66 +47,75 @@ export default function SeniorCard({ senior, onRequest }) {
             )}
           </div>
           <p className="senior-card-branch text-secondary">{branch}</p>
-          <div className="senior-card-stats">
-            <span className="senior-stat">
-              <span className="senior-stat-val">⭐ {rating.toFixed(1)}</span>
-            </span>
-            <span className="senior-stat-sep">·</span>
-            <span className="senior-stat">
-              <span className="senior-stat-val">{responseRate}%</span>
-              <span className="senior-stat-lbl"> response</span>
-            </span>
-            <span className="senior-stat-sep">·</span>
-            <span className="senior-stat">
-              <span className="senior-stat-val">{avgResponseTime}</span>
-            </span>
-            <span className="senior-stat-sep">·</span>
-            <span className="senior-stat">
-              <span className="senior-stat-lbl">{totalInteractions} guided</span>
-            </span>
-          </div>
+          {hasStats && (
+            <div className="senior-card-stats">
+              <span className="senior-stat">
+                <span className="senior-stat-val">⭐ {rating.toFixed(1)}</span>
+              </span>
+              <span className="senior-stat-sep">·</span>
+              <span className="senior-stat">
+                <span className="senior-stat-val">{responseRate}%</span>
+                <span className="senior-stat-lbl"> response</span>
+              </span>
+              <span className="senior-stat-sep">·</span>
+              <span className="senior-stat">
+                <span className="senior-stat-val">{avgResponseTime}</span>
+              </span>
+              <span className="senior-stat-sep">·</span>
+              <span className="senior-stat">
+                <span className="senior-stat-lbl">{totalInteractions} guided</span>
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
       <p className="senior-card-bio text-secondary">{bio}</p>
 
-      <div className="senior-card-skills">
-        {skills.slice(0, 3).map((sk) => (
-          <span key={sk.name} className="tag">
-            {sk.name}
-            {sk.proficiency === 'Expert' && <span style={{ color: 'var(--accent-light)' }}> ★</span>}
-          </span>
-        ))}
-        {skills.length > 3 && (
-          <span className="tag">+{skills.length - 3} more</span>
-        )}
-      </div>
+      {skills.length > 0 && (
+        <div className="senior-card-skills">
+          {skills.slice(0, 3).map((sk) => (
+            <span key={sk.name} className="tag">
+              {sk.name}
+              {sk.proficiency === 'Expert' && (
+                <span style={{ color: 'var(--accent-light)' }}> ★</span>
+              )}
+            </span>
+          ))}
+          {skills.length > 3 && <span className="tag">+{skills.length - 3} more</span>}
+        </div>
+      )}
 
       <div className="senior-card-footer">
-        <div className="senior-card-reliability">
-          <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>Reliability</span>
-          <div className="flex items-center gap-2">
-            <div className="progress-bar-track" style={{ width: '80px' }}>
-              <div
-                className="progress-bar-fill"
-                style={{ width: `${reliabilityScore}%` }}
-              />
+        {reliabilityScore != null && (
+          <div className="senior-card-reliability">
+            <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>Reliability</span>
+            <div className="flex items-center gap-2">
+              <div className="progress-bar-track" style={{ width: '80px' }}>
+                <div className="progress-bar-fill" style={{ width: `${reliabilityScore}%` }} />
+              </div>
+              <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-accent)', fontWeight: 600 }}>
+                {reliabilityScore}
+              </span>
             </div>
-            <span style={{ fontSize: 'var(--text-xs)', color: 'var(--text-accent)', fontWeight: 600 }}>
-              {reliabilityScore}
-            </span>
           </div>
-        </div>
+        )}
         <div className="senior-card-actions">
-          <Link to={`/senior/${id}`} className="btn btn-ghost btn-sm">
-            View Profile
-          </Link>
-          {onRequest && (
-            <button className="btn btn-primary btn-sm" onClick={() => onRequest(senior)}>
-              Request
-            </button>
-          )}
-        </div>
+         {isRealProfile ? (
+          <>
+            <Link to={`/senior/${id}`} className="btn btn-ghost btn-sm">
+              View Profile
+            </Link>
+            {onRequest && (
+              <button className="btn btn-primary btn-sm" onClick={() => onRequest(senior)}>
+                Request
+              </button>
+            )}
+          </>
+        ) : (
+          <span className="badge badge-muted">Sample profile</span>
+        )}
+      </div>
       </div>
     </div>
   );
