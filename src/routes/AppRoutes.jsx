@@ -3,18 +3,18 @@ import { RequireAuth, RequireProfile, RequireNoProfile, PublicOnly } from './gua
 
 // Pages ko public/ aur app/ folders mein move karne ke baad
 // VS Code in imports ko khud update kar dega.
-import LandingPage from '../pages/LandingPage';
-import LoginPage from '../pages/LoginPage';
-import OnboardingPage from '../pages/OnboardingPage';
-import DashboardPage from '../pages/DashboardPage';
-import ExplorePage from '../pages/ExplorePage';
-import SeniorProfilePage from '../pages/SeniorProfilePage';
-import CoursesPage from '../pages/CoursesPage';
-import CourseDetailPage from '../pages/CourseDetailPage';
-import SkillsPage from '../pages/SkillsPage';
-import InboxPage from '../pages/InboxPage';
-import ChatPage from '../pages/ChatPage';
-import ProfilePage from '../pages/ProfilePage';
+import LandingPage from "../pages/public/LandingPage";
+import LoginPage from '../pages/public/LoginPage';
+import OnboardingPage from "../pages/app/OnboardingPage";
+import DashboardPage from '../pages/app/DashboardPage';
+import ExplorePage from '../pages/app/ExplorePage';
+import SeniorProfilePage from "../pages/app/SeniorProfilePage";
+import CoursesPage from "../pages/app/CoursesPage";
+import CourseDetailPage from "../pages/app/CourseDetailPage";
+import SkillsPage from '../pages/app/SkillsPage';
+import InboxPage from '../pages/app/InboxPage';
+import ChatPage from '../pages/app/ChatPage';
+import ProfilePage from '../pages/app/ProfilePage';
 
 export default function AppRoutes() {
   return (

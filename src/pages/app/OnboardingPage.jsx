@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { useAuth } from '../context/AuthContext';
-import { saveMyProfile } from '../services/profiles';
-import AuthShell from '../components/auth/AuthShell';
+import { useAuth } from "../../context/AuthContext";
+import { saveMyProfile } from "../../services/profiles";
+import AuthShell from "../../components/auth/AuthShell";
 
 const BRANCHES = [
   'Computer Science & Engineering',

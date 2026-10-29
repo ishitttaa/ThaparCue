@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
-import { COURSES } from '../data/mockCourses';
-import CourseCard from '../components/CourseCard';
+import { COURSES } from '../../data/mockCourses';
+import CourseCard from '../../components/CourseCard';
 
 const ALL_BRANCHES = ['All', 'CSE', 'IT', 'ECE', 'EEE', 'ME', 'CE', 'COE'];
 const YEARS = ['All', '1', '2', '3', '4'];

@@ -1,5 +1,5 @@
-import { useAuth } from '../context/AuthContext';
-import { INTERACTIONS } from '../data/mockInteractions';
+import { useAuth } from '../../context/AuthContext';
+import { INTERACTIONS } from '../../data/mockInteractions';
 import { Link } from 'react-router-dom';
 
 export default function ProfilePage() {

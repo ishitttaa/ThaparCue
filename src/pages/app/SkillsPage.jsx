@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
-import { SKILL_CATEGORIES, searchSkills } from '../data/mockSkills';
-import { getSeniorsByIds } from '../data/mockSeniors';
-import SkillCard from '../components/SkillCard';
-import SeniorCard from '../components/SeniorCard';
-import RequestModal from '../components/RequestModal';
+import { SKILL_CATEGORIES, searchSkills } from '../../data/mockSkills';
+import { getSeniorsByIds } from '../../data/mockSeniors';
+import SkillCard from '../../components/SkillCard';
+import SeniorCard from '../../components/SeniorCard';
+import RequestModal from '../../components/RequestModal';
 
 export default function SkillsPage() {
   const [query, setQuery] = useState('');

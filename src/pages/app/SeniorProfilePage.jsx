@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { getSeniorById } from '../data/mockSeniors';
-import { getCourseById } from '../data/mockCourses';
-import RequestModal from '../components/RequestModal';
+import { getSeniorById } from '../../data/mockSeniors';
+import { getCourseById } from '../../data/mockCourses';
+import RequestModal from '../../components/RequestModal';
 
 const proficiencyColor = {
   Expert: 'badge-accent',

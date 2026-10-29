@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { requestOtp, confirmOtp } from '../services/auth';
-import AuthShell from '../components/auth/AuthShell';
+import { requestOtp, confirmOtp } from '../../services/auth';
+import AuthShell from '../../components/auth/AuthShell';
 
 export default function LoginPage() {
   const [stage, setStage] = useState('email'); // 'email' | 'otp'

@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getCourseById } from '../data/mockCourses';
-import { getSeniorsByIds } from '../data/mockSeniors';
-import SeniorCard from '../components/SeniorCard';
-import RequestModal from '../components/RequestModal';
+import { getCourseById } from '../../data/mockCourses';
+import { getSeniorsByIds } from '../../data/mockSeniors';
+import SeniorCard from '../../components/SeniorCard';
+import RequestModal from '../../components/RequestModal';
 
 const workloadColor = {
   Low: 'badge-success',

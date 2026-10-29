@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { SENIORS } from '../data/mockSeniors';
-import { COURSES } from '../data/mockCourses';
-import { INTERACTIONS } from '../data/mockInteractions';
-import SeniorCard from '../components/SeniorCard';
-import RequestModal from '../components/RequestModal';
+import { useAuth } from '../../context/AuthContext';
+import { SENIORS } from '../../data/mockSeniors';
+import { COURSES } from '../../data/mockCourses';
+import { INTERACTIONS } from '../../data/mockInteractions';
+import SeniorCard from '../../components/SeniorCard';
+import RequestModal from '../../components/RequestModal';
 
 export default function DashboardPage() {
   const { user } = useAuth();
