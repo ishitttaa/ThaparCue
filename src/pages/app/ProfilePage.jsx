@@ -1,27 +1,96 @@
-import { useAuth } from '../../context/AuthContext';
-import { INTERACTIONS } from '../../data/mockInteractions';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
+import { useMyProfile } from '../../hooks/useMyProfile';
+import { useUpdateProfile } from '../../hooks/useUpdateProfile';
+import { useRequests } from '../../hooks/useRequests';
+import { BRANCHES } from '../../lib/branches';
+
+const BIO_MAX = 300;
+
+function initialsOf(name = '') {
+  return (
+    name
+      .trim()
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join('')
+      .slice(0, 2)
+      .toUpperCase() || '?'
+  );
+}
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
+  const { data: profile, isPending } = useMyProfile();
+  const { data: requests = [] } = useRequests();
+  const update = useUpdateProfile();
 
-  const myInteractions = INTERACTIONS.filter(
-    (i) => i.senderId === (user?.id || 'stu-001')
-  );
-  const rated = myInteractions.filter((i) => i.isRated);
-  const pending = myInteractions.filter((i) => i.status === 'pending');
-  const responded = myInteractions.filter((i) => i.status === 'responded');
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ name: '', branch: '', year: '', bio: '' });
+  const [formError, setFormError] = useState('');
 
-  const scoreColor =
-    user?.reliabilityScore >= 85 ? 'var(--success)' :
-    user?.reliabilityScore >= 70 ? 'var(--warning)' : 'var(--danger)';
+  if (isPending || !profile) {
+    return (
+      <div className="page-content">
+        <div className="container empty-state">
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const sent = requests.filter((r) => r.from_user === user.id).length;
+  const received = requests.length - sent;
+  const pending = requests.filter((r) => r.status === 'pending').length;
+  const accepted = requests.filter((r) => r.status === 'accepted').length;
+
+  // Purane profile ki branch agar list mein na ho, tab bhi dropdown mein dikhe
+  const branchOptions =
+    !form.branch || BRANCHES.includes(form.branch)
+      ? BRANCHES
+      : [form.branch, ...BRANCHES];
+
+  const startEdit = () => {
+    setForm({
+      name: profile.name || '',
+      branch: profile.branch || '',
+      year: String(profile.year || ''),
+      bio: profile.bio || '',
+    });
+    setFormError('');
+    setEditing(true);
+  };
+
+  const setField = (key) => (e) =>
+    setForm((current) => ({ ...current, [key]: e.target.value }));
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!form.name.trim()) return setFormError('Please enter your name.');
+    if (!form.branch) return setFormError('Please select your branch.');
+    if (!form.year) return setFormError('Please select your year.');
+    if (form.bio.length > BIO_MAX) {
+      return setFormError(`Bio can be at most ${BIO_MAX} characters.`);
+    }
+
+    update.mutate(form, {
+      onSuccess: () => setEditing(false),
+      onError: (err) => setFormError(err.message || 'Could not save changes.'),
+    });
+  };
 
   return (
     <div className="page-content">
       <div className="container">
         <div className="page-header anim-fade-up">
           <span className="section-label">Account</span>
-          <h1 className="font-display" style={{ fontSize: 'var(--text-4xl)', marginTop: 'var(--space-2)' }}>
+          <h1
+            className="font-display"
+            style={{ fontSize: 'var(--text-4xl)', marginTop: 'var(--space-2)' }}
+          >
             My Profile
           </h1>
         </div>
@@ -34,135 +103,191 @@ export default function ProfilePage() {
                 <div
                   className="avatar-placeholder"
                   style={{
-                    width: 88, height: 88, fontSize: '1.6rem',
+                    width: 88,
+                    height: 88,
+                    fontSize: '1.6rem',
                     background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))',
                   }}
                 >
-                  {user?.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                  {initialsOf(profile.name)}
                 </div>
               </div>
 
-              <h2 className="font-display" style={{ fontSize: 'var(--text-2xl)', textAlign: 'center' }}>
-                {user?.name}
-              </h2>
-              <p className="text-secondary" style={{ textAlign: 'center', fontSize: 'var(--text-sm)', marginTop: 4 }}>
-                {user?.email}
-              </p>
-              <div className="flex gap-2" style={{ justifyContent: 'center', marginTop: 'var(--space-3)', flexWrap: 'wrap' }}>
-                <span className="badge badge-accent">{user?.branch}</span>
-                <span className="badge badge-muted">Year {user?.year}</span>
-              </div>
+              {editing ? (
+                <form onSubmit={handleSave} className="login-form" noValidate>
+                  
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-name">Full Name</label>
+                    <input
+                      id="edit-name"
+                      className="form-input"
+                      value={form.name}
+                      onChange={setField('name')}
+                      required
+                    />
+                  </div>
 
-              {/* Reliability score */}
-              <div className="profile-reliability-block" style={{ marginTop: 'var(--space-6)' }}>
-                <div className="flex justify-between items-center" style={{ marginBottom: 'var(--space-2)' }}>
-                  <span className="text-muted" style={{ fontSize: 'var(--text-sm)' }}>Reliability Score</span>
-                  <span style={{ fontWeight: 700, color: scoreColor, fontSize: 'var(--text-2xl)', fontFamily: 'var(--font-display)' }}>
-                    {user?.reliabilityScore}
-                  </span>
-                </div>
-                <div className="progress-bar-track" style={{ height: 8 }}>
-                  <div className="progress-bar-fill" style={{ width: `${user?.reliabilityScore}%` }} />
-                </div>
-                <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-2)' }}>
-                  Based on your interaction history and community feedback
-                </p>
-              </div>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-branch">Branch</label>
+                    <select
+                      id="edit-branch"
+                      className="form-select"
+                      value={form.branch}
+                      onChange={setField('branch')}
+                      required
+                    >
+                      <option value="">Select branch…</option>
+                      {branchOptions.map((b) => (
+                        <option key={b} value={b}>{b}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-year">Current Year</label>
+                    <select
+                      id="edit-year"
+                      className="form-select"
+                      value={form.year}
+                      onChange={setField('year')}
+                      required
+                    >
+                      <option value="">Select year…</option>
+                      {[1, 2, 3, 4].map((y) => (
+                        <option key={y} value={y}>Year {y}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="edit-bio">Bio</label>
+                    <textarea
+                      id="edit-bio"
+                      className="form-input"
+                      rows={4}
+                      maxLength={BIO_MAX}
+                      placeholder="Tell others what you can help with…"
+                      value={form.bio}
+                      onChange={setField('bio')}
+                      style={{ resize: 'vertical' }}
+                    />
+                    <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
+                      {form.bio.length}/{BIO_MAX}
+                    </span>
+                  </div>
+                  {formError && (
+                    <p
+                      role="alert"
+                      style={{
+                        color: '#f87171',
+                        fontSize: 'var(--text-sm)',
+                        marginBottom: 'var(--space-3)',
+                      }}
+                    >
+                      {formError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    className="btn btn-primary w-full"
+                    disabled={update.isPending}
+                  >
+                    {update.isPending ? 'Saving...' : 'Save changes'}
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-ghost w-full"
+                    style={{ marginTop: 'var(--space-2)' }}
+                    onClick={() => setEditing(false)}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <h2
+                    className="font-display"
+                    style={{ fontSize: 'var(--text-2xl)', textAlign: 'center' }}
+                  >
+                    {profile.name}
+                  </h2>
+                  <p
+                    className="text-secondary"
+                    style={{ textAlign: 'center', fontSize: 'var(--text-sm)', marginTop: 4 }}
+                  >
+                    {user.email}
+                  </p>
+
+                  <div
+                    className="flex gap-2"
+                    style={{
+                      justifyContent: 'center',
+                      marginTop: 'var(--space-3)',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span className="badge badge-accent">{profile.branch}</span>
+                    <span className="badge badge-muted">Year {profile.year}</span>
+                  </div>
+
+                  <p className="profile-bio text-secondary">
+                    {profile.bio || 'No bio added yet.'}
+                  </p>
+
+                  <button
+                    className="btn btn-secondary w-full"
+                    style={{ marginTop: 'var(--space-4)' }}
+                    onClick={startEdit}
+                  >
+                    Edit profile
+                  </button>
+                </>
+              )}
 
               <div className="divider" />
-
-              <button className="btn btn-danger w-full" onClick={logout}>Logout</button>
+              <button className="btn btn-danger w-full" onClick={logout}>
+                Logout
+              </button>
             </div>
           </div>
 
           {/* Right: Details */}
           <div className="profile-main">
-            {/* Interaction stats */}
-            <div className="glass-card profile-section anim-fade-up" style={{ animationDelay: '0.1s' }}>
-              <h2 className="font-display section-title">Interaction Stats</h2>
+            <div
+              className="glass-card profile-section anim-fade-up"
+              style={{ animationDelay: '0.1s' }}
+            >
+              <h2 className="font-display section-title">Request Stats</h2>
               <div className="profile-stats-grid">
                 <div className="profile-stat">
-                  <span className="profile-stat-val">{myInteractions.length}</span>
-                  <span className="profile-stat-lbl">Total Requests</span>
+                  <span className="profile-stat-val">{sent}</span>
+                  <span className="profile-stat-lbl">Sent</span>
                 </div>
                 <div className="profile-stat">
-                  <span className="profile-stat-val" style={{ color: 'var(--success)' }}>{responded.length}</span>
-                  <span className="profile-stat-lbl">Responded</span>
+                  <span className="profile-stat-val">{received}</span>
+                  <span className="profile-stat-lbl">Received</span>
                 </div>
                 <div className="profile-stat">
-                  <span className="profile-stat-val" style={{ color: 'var(--warning)' }}>{pending.length}</span>
+                  <span className="profile-stat-val" style={{ color: 'var(--warning)' }}>
+                    {pending}
+                  </span>
                   <span className="profile-stat-lbl">Pending</span>
                 </div>
                 <div className="profile-stat">
-                  <span className="profile-stat-val" style={{ color: 'var(--accent-light)' }}>{rated.length}</span>
-                  <span className="profile-stat-lbl">Rated</span>
+                  <span className="profile-stat-val" style={{ color: 'var(--success)' }}>
+                    {accepted}
+                  </span>
+                  <span className="profile-stat-lbl">Accepted</span>
                 </div>
               </div>
-              <Link to="/inbox" className="btn btn-secondary w-full" style={{ marginTop: 'var(--space-4)' }}>
+              <Link
+                to="/inbox"
+                className="btn btn-secondary w-full"
+                style={{ marginTop: 'var(--space-4)' }}
+              >
                 View Inbox
               </Link>
             </div>
-
-            {/* Skills */}
-            <div className="glass-card profile-section anim-fade-up" style={{ animationDelay: '0.2s' }}>
-              <h2 className="font-display section-title">My Skills</h2>
-              {user?.skills && user.skills.length > 0 ? (
-                <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                  {user.skills.map((sk) => (
-                    <span key={sk} className="tag active">{sk}</span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted">No skills added yet.</p>
-              )}
-            </div>
-
-            {/* Courses taken */}
-            <div className="glass-card profile-section anim-fade-up" style={{ animationDelay: '0.3s' }}>
-              <h2 className="font-display section-title">Courses Taken</h2>
-              {user?.coursesTaken && user.coursesTaken.length > 0 ? (
-                <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-                  {user.coursesTaken.map((c) => (
-                    <Link key={c} to={`/course/${c}`} className="course-taken-chip">
-                      <span className="course-taken-code">{c}</span>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted">No courses listed.</p>
-              )}
-            </div>
-
-            {/* Recent interactions */}
-            {myInteractions.length > 0 && (
-              <div className="glass-card profile-section anim-fade-up" style={{ animationDelay: '0.4s' }}>
-                <h2 className="font-display section-title">Recent Activity</h2>
-                <div className="flex-col gap-3" style={{ display: 'flex' }}>
-                  {myInteractions.slice(0, 4).reverse().map((i) => (
-                    <Link key={i.id} to={`/inbox/${i.id}`} className="interaction-preview glass-card">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className="avatar-placeholder avatar-sm"
-                          style={{
-                            background: `linear-gradient(135deg, hsl(${i.seniorColorHue},70%,55%), hsl(${i.seniorColorHue + 40},70%,45%))`,
-                            fontSize: '0.65rem',
-                          }}
-                        >
-                          {i.seniorInitials}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{i.seniorName}</p>
-                          <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>{i.topicLabel}</p>
-                        </div>
-                        <span className={`badge ${i.status === 'responded' ? 'badge-success' : i.status === 'pending' ? 'badge-warning' : 'badge-muted'}`}>
-                          {i.status}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>

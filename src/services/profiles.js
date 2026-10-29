@@ -56,3 +56,18 @@ export async function getProfileById(id) {
   }
   return data;
 }
+export async function updateMyProfile(userId, { name, branch, year, bio }) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({
+      name: name.trim(),
+      branch,
+      year: Number(year),
+      bio: bio.trim(),
+    })
+    .eq('id', userId)
+    .select('id, name, branch, year, bio')
+    .single();
+  if (error) throw error;
+  return data;
+}

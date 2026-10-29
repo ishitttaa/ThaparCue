@@ -4,15 +4,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from "../../context/AuthContext";
 import { saveMyProfile } from "../../services/profiles";
 import AuthShell from "../../components/auth/AuthShell";
+import { BRANCHES } from '../../lib/branches';
 
-const BRANCHES = [
-  'Computer Science & Engineering',
-  'Information Technology',
-  'Electronics & Communication Engineering',
-  'Electrical Engineering',
-  'Mechanical Engineering',
-  'Civil Engineering',
-];
 
 export default function OnboardingPage() {
   const { user, logout } = useAuth();

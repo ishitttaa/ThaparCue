@@ -2,13 +2,7 @@ import { useMemo, useState } from 'react';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
 import { useStudents } from '../../hooks/useProfiles';
-
-const BRANCHES = [
-  'All',
-  'Computer Science & Engineering',
-  'Information Technology',
-  'Electronics & Communication Engineering',
-];
+import { BRANCHES } from '../../lib/branches';
 
 const SORT_OPTIONS = [
   { value: 'name', label: 'Name (A–Z)' },
@@ -54,7 +48,7 @@ export default function ExplorePage() {
         />
 
         <select value={branch} onChange={(e) => setBranch(e.target.value)}>
-          {BRANCHES.map((item) => (
+          {['All', ...BRANCHES].map((item) => (
             <option key={item} value={item}>{item}</option>
           ))}
         </select>
