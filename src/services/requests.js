@@ -29,3 +29,18 @@ export async function respondToRequest({ requestId, userId, status }) {
   if (!data) throw new Error('This request was already answered.');
   return data;
 }
+export async function getChatRequest(requestId, userId) {
+  const { data, error } = await supabase
+    .from('requests')
+    .select(REQUEST_COLS)
+    .eq('id', requestId)
+    .maybeSingle();
+
+  if (error) {
+    if (error.code === '22P02') return null; // URL mein galat id
+    throw error;
+  }
+
+  const isMember = data && [data.from_user, data.to_user].includes(userId);
+  return isMember && data.status === 'accepted' ? data : null;
+}
