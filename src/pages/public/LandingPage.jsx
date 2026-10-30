@@ -75,9 +75,9 @@ export default function LandingPage() {
         <div className="landing-hero-visual anim-float">
           <div className="hero-card glass-card">
             <div className="hero-card-row">
-              <div className="avatar-placeholder avatar-md" style={{ background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))', fontSize: '0.85rem' }}>AM</div>
+              <div className="avatar-placeholder avatar-md" style={{ background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))', fontSize: '0.85rem' }}>RM</div>
               <div>
-                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Arjun Mehta · CSE Y4</p>
+                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Roopanshi Marwaha · CSE Y3</p>
                 <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>System Design · OS · DSA</p>
               </div>
               <span className="badge badge-success" style={{ marginLeft: 'auto' }}>94 score</span>
