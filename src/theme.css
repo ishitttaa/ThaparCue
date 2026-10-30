@@ -1091,3 +1091,92 @@ body::before { display: none; }
   .chat-header { flex-wrap: wrap; }
   .chat-bubble-wrap .flex-col { max-width: 85% !important; }
 }
+
+/* ── COURSE DETAIL ── */
+.course-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-8);
+  margin-bottom: var(--space-6);
+  border-left: 5px solid #c9a227;
+}
+.course-detail-header:hover { transform: none; }
+.course-detail-header h1 { color: var(--accent); }
+.course-detail-header-stats {
+  display: flex;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+.stat-value { color: var(--accent); }
+
+.course-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+}
+.course-detail-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.insights-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.insight-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+}
+.insight-item p { margin: 0; font-size: var(--text-sm); line-height: 1.6; }
+.insight-num {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #7a1c1c;
+  color: #fff;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.grade-table th {
+  background: #7a1c1c;
+  color: #fff;
+  font-weight: 600;
+  padding: var(--space-3);
+  text-align: center;
+}
+.grade-table td {
+  padding: var(--space-3);
+  text-align: center;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.grade-table tbody tr:hover { background: var(--bg-elevated); }
+.grade-row-fresh {
+  background: rgba(201, 162, 39, 0.14);
+  font-weight: 600;
+}
+.grade-O { color: var(--accent); font-weight: 700; }
+
+@media (max-width: 900px) {
+  .course-detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
