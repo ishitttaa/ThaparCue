@@ -1180,3 +1180,6 @@ body::before { display: none; }
 @media (max-width: 900px) {
   .course-detail-grid { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ── SENIOR PROFILE ── */
+.profile-card h1 { color: var(--accent); }
