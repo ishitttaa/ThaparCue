@@ -1183,3 +1183,98 @@ body::before { display: none; }
 
 /* ── SENIOR PROFILE ── */
 .profile-card h1 { color: var(--accent); }
+
+/* ── REQUEST MODAL ── */
+.modal-overlay {
+  background: rgba(59, 13, 13, 0.6);
+  backdrop-filter: blur(4px);
+}
+.modal-box {
+  background: #fff;
+  border: 1px solid var(--border-subtle);
+  border-top: 4px solid #c9a227;
+  box-shadow: var(--shadow-lg);
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
+}
+.modal-box h2 { color: var(--accent); }
+
+.topic-btn { background: #fff; }
+.topic-btn:hover {
+  background: var(--bg-elevated);
+  border-color: #c9a227;
+  color: var(--text-primary);
+}
+.topic-btn.active {
+  background: rgba(122, 28, 28, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-glow);
+  font-weight: 600;
+}
+.topic-btn:focus-visible { outline-color: var(--accent); }
+
+/* Error box ka text (inline style se aata hai) */
+.modal-box [style*="danger-dim"] { color: #b91c1c !important; }
+.login-card [role="alert"],
+.profile-card [role="alert"] { color: #b91c1c !important; }
+
+/* ── DYNAMIC TOUCH ── */
+html { scroll-behavior: smooth; }
+
+/* Buttons: halka lift + press */
+.btn {
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(0) scale(0.98); }
+.btn-primary:hover { box-shadow: 0 8px 22px rgba(122, 28, 28, 0.35); }
+
+/* Cards: smooth lift + maroon glow */
+.glass-card {
+  transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+}
+.course-card:hover,
+.skill-card:hover,
+.senior-card:hover {
+  box-shadow: 0 12px 28px rgba(122, 28, 28, 0.15);
+}
+
+/* Navbar links: gold underline slide-in */
+.navbar-link { position: relative; border-bottom: none; }
+.navbar-link::after {
+  content: '';
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 0;
+  height: 2px;
+  background: #e8c55a;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 220ms ease;
+}
+.navbar-link:hover::after,
+.navbar-link-active::after { transform: scaleX(1); }
+
+/* Stats strip aur hero card: gentle float */
+.hero-card { animation: float 4s ease-in-out infinite; }
+
+/* Inputs: focus pe smooth glow */
+.form-input, .form-select,
+.explore-filters input, .explore-filters select {
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+/* Page fade-in */
+.page-content, .explore-page, .inbox-page {
+  animation: fadeUp 400ms ease both;
+}
+
+/* Jinko motion pasand nahi, unke liye */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
