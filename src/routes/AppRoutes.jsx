@@ -1,8 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { RequireAuth, RequireProfile, RequireNoProfile, PublicOnly } from './guards';
 
-// Pages ko public/ aur app/ folders mein move karne ke baad
-// VS Code in imports ko khud update kar dega.
+
 import LandingPage from "../pages/public/LandingPage";
 import LoginPage from '../pages/public/LoginPage';
 import OnboardingPage from "../pages/app/OnboardingPage";
