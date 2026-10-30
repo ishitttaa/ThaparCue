@@ -946,3 +946,57 @@ body::before { display: none; }
 @media (max-width: 480px) {
   .profile-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ── INBOX ── */
+.inbox-page .page-header h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+}
+.inbox-page .page-header p { color: var(--text-secondary); margin-top: var(--space-3); }
+
+.inbox-page .inbox-tab.active {
+  background: #7a1c1c;
+  border-color: #7a1c1c;
+  color: #fff;
+}
+.inbox-page .inbox-tab.active .tab-count {
+  background: #c9a227;
+  color: #3b0d0d;
+}
+.inbox-page .tab-count {
+  background: rgba(122, 28, 28, 0.12);
+  color: var(--accent);
+}
+
+.request-card {
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  border-left: 4px solid #c9a227;
+}
+.request-person h3 { color: var(--accent); }
+
+.status-badge.pending  { color: #92600a; background: rgba(245, 158, 11, 0.14); border-color: rgba(245, 158, 11, 0.4); }
+.status-badge.accepted { color: #047857; background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.4); }
+.status-badge.rejected { color: #b91c1c; background: rgba(239, 68, 68, 0.1);  border-color: rgba(239, 68, 68, 0.35); }
+
+.error-message {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--danger-dim);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  color: #b91c1c;
+  font-size: var(--text-sm);
+}
+.error-message button {
+  background: #fff;
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 4px 12px;
+  font-weight: 600;
+}
+.inbox-page .empty-state a { color: var(--accent); font-weight: 600; }
