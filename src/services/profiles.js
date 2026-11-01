@@ -33,8 +33,7 @@ export async function saveMyProfile(userId, { name, branch, year }) {
   return data;
 }
 const STUDENT_COLS =
-  'id, name, branch, year, bio, profile_skills(level, skill:skills(name)), profile_custom_skills(name)';
-
+  'id, name, branch, year, bio, profile_skills(level, skill:skills(name)), profile_custom_skills(name, level)';
 export async function getOtherProfiles(userId) {
   const { data, error } = await supabase
     .from('profiles')

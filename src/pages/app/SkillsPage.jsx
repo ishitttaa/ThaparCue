@@ -35,8 +35,10 @@ export default function SkillsPage() {
   const [requestTarget, setRequestTarget] = useState(null);
 
   const selected = skills.find((s) => s.id === selectedId) ?? null;
-  const { data: students = [], isPending: studentsLoading } = useStudentsWithSkill(selected?.id);
-
+    const { data: students = [], isPending: studentsLoading } = useStudentsWithSkill(
+    selected?.id,
+    selected?.name
+  );
   const categories = useMemo(() => {
     const names = skills
       .filter((s) => kind === 'all' || s.kind === kind)

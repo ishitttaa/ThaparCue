@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { LEVELS } from '../lib/skillLevels';
 
 const MAX_SHOWN = 150;
 const NAME_PATTERN = /^[A-Za-z0-9][A-Za-z0-9 .+#/&(),-]{1,39}$/;
@@ -9,13 +10,33 @@ const TABS = [
   { value: 'soft', label: 'Soft skills' },
 ];
 
+const rowBorder = '1px solid rgba(128,128,128,0.15)';
+
+function LevelSelect({ value, onChange, label }) {
+  return (
+    <select
+      className="form-select"
+      aria-label={label}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      style={{ padding: '6px 10px', minHeight: 36 }}
+    >
+      {LEVELS.map((l) => (
+        <option key={l} value={l}>{l}</option>
+      ))}
+    </select>
+  );
+}
+
 export default function SkillPickerModal({
   skills = [],
-  selectedIds = [],
+  mySkillRows = [],
   customSkills = [],
   onToggle,
+  onSetLevel,
   onAddCustom,
   onRemoveCustom,
+  onSetCustomLevel,
   onClose,
   error = '',
   busy = false,
@@ -25,11 +46,17 @@ export default function SkillPickerModal({
   const [query, setQuery] = useState('');
   const [localError, setLocalError] = useState('');
 
-  const selected = useMemo(() => new Set(selectedIds), [selectedIds]);
-  const selectedSkills = useMemo(
-    () => skills.filter((s) => selected.has(s.id)),
-    [skills, selected]
+  const selected = useMemo(
+    () => new Set(mySkillRows.map((row) => row.skill_id)),
+    [mySkillRows]
   );
+
+  const mine = useMemo(() => {
+    const byId = new Map(skills.map((s) => [s.id, s]));
+    return mySkillRows
+      .map((row) => ({ ...row, skill: byId.get(row.skill_id) }))
+      .filter((row) => row.skill);
+  }, [skills, mySkillRows]);
 
   const categories = useMemo(() => {
     const names = skills
@@ -68,6 +95,8 @@ export default function SkillPickerModal({
     }
   };
 
+  const total = mine.length + customSkills.length;
+
   return (
     <div
       className="modal-overlay"
@@ -77,7 +106,8 @@ export default function SkillPickerModal({
         className="modal-box"
         style={{
           width: 'min(680px, 94vw)',
-          maxHeight: '90vh',
+          maxHeight: '92vh',
+          overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--space-3)',
@@ -96,7 +126,7 @@ export default function SkillPickerModal({
               Select your skills
             </h2>
             <p className="text-muted" style={{ fontSize: 'var(--text-sm)', marginTop: 4 }}>
-              Tap a skill to add or remove it. Can't find yours? Type it and add it.
+              Tap a skill to add it, then set how well you know it. Can't find yours? Type it and add it.
             </p>
           </div>
           <button type="button" className="btn btn-primary btn-sm" onClick={onClose}>
@@ -104,43 +134,79 @@ export default function SkillPickerModal({
           </button>
         </div>
 
-        {(selectedSkills.length > 0 || customSkills.length > 0) && (
+        {total > 0 && (
           <div>
             <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginBottom: 6 }}>
-              Selected ({selectedSkills.length + customSkills.length})
+              Your skills ({total})
             </p>
             <div
               style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: 'var(--space-2)',
-                maxHeight: 96,
+                maxHeight: 190,
                 overflowY: 'auto',
+                border: '1px solid rgba(128,128,128,0.25)',
+                borderRadius: 'var(--radius-md)',
               }}
             >
-              {selectedSkills.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className="tag"
-                  title={`Remove ${s.name}`}
-                  onClick={() => onToggle(s.id)}
-                  style={{ cursor: 'pointer' }}
+              {mine.map((row) => (
+                <div
+                  key={row.skill_id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) 140px 36px',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    borderBottom: rowBorder,
+                  }}
                 >
-                  {s.name} ✕
-                </button>
+                  <span style={{ fontWeight: 600 }}>{row.skill.name}</span>
+                  <LevelSelect
+                    value={row.level}
+                    label={`Level for ${row.skill.name}`}
+                    onChange={(level) => onSetLevel(row.skill_id, level)}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    aria-label={`Remove ${row.skill.name}`}
+                    onClick={() => onToggle(row.skill_id)}
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
-              {customSkills.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className="tag"
-                  title={`Remove ${s.name} (your own)`}
-                  onClick={() => onRemoveCustom(s.id)}
-                  style={{ cursor: 'pointer' }}
+              {customSkills.map((row) => (
+                <div
+                  key={row.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'minmax(0, 1fr) 140px 36px',
+                    alignItems: 'center',
+                    gap: 'var(--space-2)',
+                    padding: 'var(--space-2) var(--space-3)',
+                    borderBottom: rowBorder,
+                  }}
                 >
-                  {s.name} ✕
-                </button>
+                  <span style={{ fontWeight: 600 }}>
+                    {row.name}{' '}
+                    <span className="text-muted" style={{ fontSize: 'var(--text-xs)', fontWeight: 400 }}>
+                      (yours)
+                    </span>
+                  </span>
+                  <LevelSelect
+                    value={row.level}
+                    label={`Level for ${row.name}`}
+                    onChange={(level) => onSetCustomLevel(row.id, level)}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    aria-label={`Remove ${row.name}`}
+                    onClick={() => onRemoveCustom(row.id)}
+                  >
+                    ✕
+                  </button>
+                </div>
               ))}
             </div>
           </div>
@@ -205,7 +271,8 @@ export default function SkillPickerModal({
 
         <div
           style={{
-            height: 'min(300px, 36vh)',
+            height: 'min(260px, 32vh)',
+            minHeight: 160,
             overflowY: 'auto',
             border: '1px solid rgba(128,128,128,0.25)',
             borderRadius: 'var(--radius-md)',
@@ -235,7 +302,7 @@ export default function SkillPickerModal({
                     color: 'inherit',
                     cursor: 'pointer',
                     border: 'none',
-                    borderBottom: '1px solid rgba(128,128,128,0.15)',
+                    borderBottom: rowBorder,
                     background: on
                       ? 'var(--accent-dim, rgba(128,32,48,0.12))'
                       : 'transparent',

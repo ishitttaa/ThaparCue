@@ -24,9 +24,9 @@ export function toStudent(profile) {
       ...(profile.profile_skills ?? [])
         .filter((row) => row.skill?.name)
         .map((row) => ({ name: row.skill.name, proficiency: row.level })),
-      ...(profile.profile_custom_skills ?? []).map((row) => ({
+        ...(profile.profile_custom_skills ?? []).map((row) => ({
         name: row.name,
-        proficiency: null,
+        proficiency: row.level,
       })),
     ],
     rating: null,
