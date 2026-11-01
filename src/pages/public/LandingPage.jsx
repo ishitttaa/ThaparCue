@@ -52,7 +52,7 @@ export default function LandingPage() {
             <span className="text-gradient">been exactly where you are</span>
           </h1>
           <p className="landing-subtitle text-secondary">
-            Thapar SkillLink connects you with verified seniors who've taken your courses,
+            ThaparCue connects you with verified seniors who've taken your courses,
             earned the grades, and landed the placements — so you get real guidance, not guesses.
           </p>
           <div className="landing-ctas">

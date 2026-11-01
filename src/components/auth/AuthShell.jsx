@@ -13,7 +13,7 @@ export default function AuthShell({ stepIndex, error, children }) {
         {/* Logo */}
         <Link to="/" className="login-logo">
           <span>⚡</span>
-          <span className="font-display">Thapar <span className="text-gradient">SkillLink</span></span>
+          <span className="font-display">Thapar <span className="text-gradient">Cue</span></span>
         </Link>
 
         {/* Step indicator */}

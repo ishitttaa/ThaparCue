@@ -5,6 +5,8 @@ import { useMyProfile } from '../../hooks/useMyProfile';
 import { useUpdateProfile } from '../../hooks/useUpdateProfile';
 import { useRequests } from '../../hooks/useRequests';
 import { BRANCHES } from '../../lib/branches';
+import CoursesTakenCard from '../../components/CoursesTakenCard';
+import CoursesPickerModal from '../../components/CoursePickerModal';
 
 const BIO_MAX = 300;
 
@@ -29,7 +31,7 @@ export default function ProfilePage() {
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: '', branch: '', year: '', bio: '' });
   const [formError, setFormError] = useState('');
-
+ 
   if (isPending || !profile) {
     return (
       <div className="page-content">
@@ -258,11 +260,13 @@ export default function ProfilePage() {
               style={{ animationDelay: '0.1s' }}
             >
               <h2 className="font-display section-title">Request Stats</h2>
+              
               <div className="profile-stats-grid">
                 <div className="profile-stat">
                   <span className="profile-stat-val">{sent}</span>
                   <span className="profile-stat-lbl">Sent</span>
                 </div>
+                
                 <div className="profile-stat">
                   <span className="profile-stat-val">{received}</span>
                   <span className="profile-stat-lbl">Received</span>
@@ -280,6 +284,7 @@ export default function ProfilePage() {
                   <span className="profile-stat-lbl">Accepted</span>
                 </div>
               </div>
+             
               <Link
                 to="/inbox"
                 className="btn btn-secondary w-full"
@@ -288,6 +293,7 @@ export default function ProfilePage() {
                 View Inbox
               </Link>
             </div>
+             <CoursesTakenCard branch={profile.branch} />
           </div>
         </div>
       </div>

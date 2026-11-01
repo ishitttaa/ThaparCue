@@ -4,7 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useMyProfile } from '../../hooks/useMyProfile';
 import { useRequests } from '../../hooks/useRequests';
 import { useStudents } from '../../hooks/useProfiles';
-import { COURSES } from '../../data/mockCourses';
+import { useCourses, useMyCourseIds } from '../../hooks/useCourses';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
 
@@ -60,8 +60,22 @@ export default function DashboardPage() {
       .slice(0, 3);
   }, [students, requests, profile?.branch, user?.id]);
 
-  // Courses abhi mock data par hain
-  const suggestedCourses = COURSES.slice(0, 3);
+  const { data: allCourses = [] } = useCourses();
+  const { data: myCourseIds = [] } = useMyCourseIds();
+  const suggestedCourses = useMemo(
+    () =>
+      allCourses
+        .filter((c) => !profile?.branch || c.groups.includes(profile.branch))
+        .filter((c) => !myCourseIds.includes(c.id))
+        .sort(
+          (a, b) =>
+            Math.abs(a.year - (profile?.year ?? 1)) -
+              Math.abs(b.year - (profile?.year ?? 1)) ||
+            a.code.localeCompare(b.code)
+        )
+        .slice(0, 3),
+    [allCourses, myCourseIds, profile?.branch, profile?.year]
+  );
 
   return (
     <div className="page-content">
@@ -219,7 +233,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {/* Suggested courses (abhi mock data) */}
+            {}
             <div className="anim-fade-up" style={{ animationDelay: '0.4s', marginTop: 'var(--space-8)' }}>
               <div className="section-header-row">
                 <h2 className="font-display" style={{ fontSize: 'var(--text-xl)' }}>Explore Courses</h2>
@@ -227,7 +241,7 @@ export default function DashboardPage() {
               </div>
               <div className="flex-col gap-3" style={{ display: 'flex' }}>
                 {suggestedCourses.map((c) => (
-                  <Link key={c.id} to={`/course/${c.id}`} className="suggested-course-card glass-card">
+                  <Link key={c.id} to={`/course/${c.code}`} className="suggested-course-card glass-card">
                     <div className="flex justify-between items-center">
                       <div>
                         <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
@@ -235,7 +249,6 @@ export default function DashboardPage() {
                           {c.code} · Year {c.year}
                         </p>
                       </div>
-                      <span className="badge badge-accent">⭐ {c.aggregatedExperience.avgRating}</span>
                     </div>
                   </Link>
                 ))}

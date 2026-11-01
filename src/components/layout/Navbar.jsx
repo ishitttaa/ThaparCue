@@ -38,7 +38,7 @@ export default function Navbar() {
         <Link to={isAuthenticated ? '/dashboard' : '/'} className="navbar-logo">
           <span className="navbar-logo-icon">⚡</span>
           <span className="navbar-logo-text font-display">
-            Thapar <span className="text-gradient">SkillLink</span>
+            Thapar <span className="text-gradient">Cue</span>
           </span>
         </Link>
 
