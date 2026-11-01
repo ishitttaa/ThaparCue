@@ -77,7 +77,21 @@ export default function SeniorProfilePage() {
           )}
 
           <p className="profile-bio text-secondary">{student.bio}</p>
-
+                    {student.skills.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--space-2)',
+                justifyContent: 'center',
+                marginTop: 'var(--space-4)',
+              }}
+            >
+              {student.skills.map((sk) => (
+                <span key={sk.name} className="tag">{sk.name}</span>
+              ))}
+            </div>
+          )}
           {isMe ? (
             <Link to="/profile" className="btn btn-ghost w-full" style={{ marginTop: 'var(--space-4)' }}>
               This is you · View my profile

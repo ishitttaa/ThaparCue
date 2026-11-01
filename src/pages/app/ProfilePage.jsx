@@ -7,6 +7,7 @@ import { useRequests } from '../../hooks/useRequests';
 import { BRANCHES } from '../../lib/branches';
 import CoursesTakenCard from '../../components/CoursesTakenCard';
 import CoursesPickerModal from '../../components/CoursePickerModal';
+import SkillsCard from '../../components/SkillsCard';
 
 const BIO_MAX = 300;
 
@@ -294,6 +295,7 @@ export default function ProfilePage() {
               </Link>
             </div>
              <CoursesTakenCard branch={profile.branch} />
+             <SkillsCard />
           </div>
         </div>
       </div>

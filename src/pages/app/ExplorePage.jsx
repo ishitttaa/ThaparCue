@@ -22,7 +22,8 @@ export default function ExplorePage() {
       .filter(
         (s) =>
           !q ||
-          [s.name, s.branch, s.bio].some((text) => text.toLowerCase().includes(q))
+            [s.name, s.branch, s.bio, ...s.skills.map((k) => k.name)].some((text) =>
+            text.toLowerCase().includes(q))
       )
       .filter((s) => branch === 'All' || s.branch === branch)
       .sort((a, b) =>

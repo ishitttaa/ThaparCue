@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
-import { getOtherProfiles, getProfileById } from '../services/profiles';
 import { toStudent } from '../lib/students';
+import { getOtherProfiles, getProfileById, getStudentsWithSkill } from '../services/profiles';
 
 export function useStudents() {
   const { user } = useAuth();
@@ -19,5 +19,14 @@ export function useStudent(id) {
     queryFn: () => getProfileById(id),
     enabled: !!id,
     select: (row) => (row ? toStudent(row) : null),
+  });
+}
+export function useStudentsWithSkill(skillId) {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['skill-students', skillId],
+    queryFn: () => getStudentsWithSkill(skillId, user.id),
+    enabled: !!skillId && !!user?.id,
+    select: (rows) => rows.map(toStudent),
   });
 }

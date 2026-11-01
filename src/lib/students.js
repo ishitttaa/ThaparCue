@@ -20,8 +20,15 @@ export function toStudent(profile) {
       .slice(0, 2)
       .toUpperCase(),
     colorHue: hueFromId(profile.id),
-    // Abhi database mein nahi hain, isliye null (cards inhe chhupa dengi)
-    skills: [],
+     skills: [
+      ...(profile.profile_skills ?? [])
+        .filter((row) => row.skill?.name)
+        .map((row) => ({ name: row.skill.name, proficiency: row.level })),
+      ...(profile.profile_custom_skills ?? []).map((row) => ({
+        name: row.name,
+        proficiency: null,
+      })),
+    ],
     rating: null,
     reliabilityScore: null,
     responseRate: null,
