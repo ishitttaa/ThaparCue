@@ -5,10 +5,12 @@ import {
   addMySkill,
   getAllSkills,
   getMyCustomSkills,
-  getMySkillIds,
+  getMySkills,
   getSkillCounts,
   removeMyCustomSkill,
   removeMySkill,
+  setMyCustomSkillLevel,
+  setMySkillLevel,
 } from '../services/skills';
 
 export function useSkills() {
@@ -19,12 +21,24 @@ export function useSkills() {
   });
 }
 
+// Rows: [{ skill_id, level }]
+export function useMySkills() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['my-skills', user?.id],
+    queryFn: () => getMySkills(user.id),
+    enabled: !!user?.id,
+  });
+}
+
+// Sirf ids chahiye ho (jaise "kya mere paas ye skill hai?")
 export function useMySkillIds() {
   const { user } = useAuth();
   return useQuery({
-    queryKey: ['my-skill-ids', user?.id],
-    queryFn: () => getMySkillIds(user.id),
+    queryKey: ['my-skills', user?.id],
+    queryFn: () => getMySkills(user.id),
     enabled: !!user?.id,
+    select: (rows) => rows.map((row) => row.skill_id),
   });
 }
 
@@ -57,10 +71,27 @@ export function useToggleMySkill() {
     mutationFn: ({ skillId, add }) =>
       add ? addMySkill(user.id, skillId) : removeMySkill(user.id, skillId),
     onSuccess: (_, { skillId, add }) => {
-      queryClient.setQueryData(['my-skill-ids', user.id], (old = []) =>
-        add
-          ? old.includes(skillId) ? old : [...old, skillId]
-          : old.filter((id) => id !== skillId)
+      queryClient.setQueryData(['my-skills', user.id], (old = []) => {
+        if (!add) return old.filter((row) => row.skill_id !== skillId);
+        return old.some((row) => row.skill_id === skillId)
+          ? old
+          : [...old, { skill_id: skillId, level: 'Intermediate' }];
+      });
+      refreshCards();
+    },
+  });
+}
+
+export function useSetSkillLevel() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const refreshCards = useRefreshStudentCards();
+
+  return useMutation({
+    mutationFn: ({ skillId, level }) => setMySkillLevel(user.id, skillId, level),
+    onSuccess: (_, { skillId, level }) => {
+      queryClient.setQueryData(['my-skills', user.id], (old = []) =>
+        old.map((row) => (row.skill_id === skillId ? { ...row, level } : row))
       );
       refreshCards();
     },
@@ -93,12 +124,29 @@ export function useRemoveCustomSkill() {
     mutationFn: (id) => removeMyCustomSkill(user.id, id),
     onSuccess: (_, id) => {
       queryClient.setQueryData(['my-custom-skills', user.id], (old = []) =>
-        old.filter((s) => s.id !== id)
+        old.filter((row) => row.id !== id)
       );
       refreshCards();
     },
   });
 }
+
+export function useSetCustomSkillLevel() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const refreshCards = useRefreshStudentCards();
+
+  return useMutation({
+    mutationFn: ({ id, level }) => setMyCustomSkillLevel(user.id, id, level),
+    onSuccess: (_, { id, level }) => {
+      queryClient.setQueryData(['my-custom-skills', user.id], (old = []) =>
+        old.map((row) => (row.id === id ? { ...row, level } : row))
+      );
+      refreshCards();
+    },
+  });
+}
+
 export function useSkillCounts() {
   return useQuery({
     queryKey: ['skill-counts'],

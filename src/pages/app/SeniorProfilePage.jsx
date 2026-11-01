@@ -88,7 +88,13 @@ export default function SeniorProfilePage() {
               }}
             >
               {student.skills.map((sk) => (
-                <span key={sk.name} className="tag">{sk.name}</span>
+                  <span key={sk.name} className="tag">
+                  {sk.name}
+                  {sk.proficiency && (
+                    <span style={{ opacity: 0.7 }}> · {sk.proficiency}</span>
+                  )}
+                  {sk.proficiency === 'Expert' && ' ★'}
+                </span>
               ))}
             </div>
           )}

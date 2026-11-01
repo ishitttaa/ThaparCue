@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '../context/AuthContext';
 import { toStudent } from '../lib/students';
 import { getOtherProfiles, getProfileById, getStudentsWithSkill } from '../services/profiles';
+import { levelRank } from '../lib/skillLevels';
 
 export function useStudents() {
   const { user } = useAuth();
@@ -21,12 +22,18 @@ export function useStudent(id) {
     select: (row) => (row ? toStudent(row) : null),
   });
 }
-export function useStudentsWithSkill(skillId) {
+export function useStudentsWithSkill(skillId, skillName) {
   const { user } = useAuth();
   return useQuery({
     queryKey: ['skill-students', skillId],
     queryFn: () => getStudentsWithSkill(skillId, user.id),
     enabled: !!skillId && !!user?.id,
-    select: (rows) => rows.map(toStudent),
+    select: (rows) => {
+      const rankOf = (s) =>
+        levelRank(s.skills.find((k) => k.name === skillName)?.proficiency);
+      return rows
+        .map(toStudent)
+        .sort((a, b) => rankOf(b) - rankOf(a) || a.name.localeCompare(b.name));
+    },
   });
 }
