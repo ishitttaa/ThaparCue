@@ -6,6 +6,7 @@ import {
   getCourseByCode,
   getCourseStudents,
   getMyCourseIds,
+  getProfileCourseIds,
   removeMyCourse,
 } from '../services/courses';
 
@@ -57,5 +58,12 @@ export function useCourseStudents(courseId) {
     queryKey: ['course-students', courseId],
     queryFn: () => getCourseStudents(courseId),
     enabled: !!courseId,
+  });
+}
+export function useProfileCourseIds(profileId) {
+  return useQuery({
+    queryKey: ['profile-course-ids', profileId],
+    queryFn: () => getProfileCourseIds(profileId),
+    enabled: !!profileId,
   });
 }

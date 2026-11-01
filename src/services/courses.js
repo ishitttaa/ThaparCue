@@ -57,3 +57,11 @@ export async function getCourseStudents(courseId) {
   if (error) throw error;
   return (data ?? []).map((row) => row.profile).filter(Boolean);
 }
+export async function getProfileCourseIds(profileId) {
+  const { data, error } = await supabase
+    .from('profile_courses')
+    .select('course_id')
+    .eq('profile_id', profileId);
+  if (error) throw error;
+  return (data ?? []).map((row) => row.course_id);
+}

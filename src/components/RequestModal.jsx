@@ -1,15 +1,18 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useNavigate } from 'react-router-dom';
-import { COURSES } from '../data/mockCourses';
-import { TOPIC_OPTIONS } from '../data/mockInteractions';
+import { TOPIC_OPTIONS } from '../lib/topics';
+import { useCourses, useProfileCourseIds } from '../hooks/useCourses';
+import CourseSelect from './CourseSelect';
 import { useAuth } from '../context/AuthContext';
 
 export default function RequestModal({ senior, onClose }) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [topic, setTopic] = useState('');
-  const [courseId, setCourseId] = useState('');
+  const [course, setCourse] = useState(null);
+  const { data: allCourses = [] } = useCourses();
+  const { data: theirCourseIds = [] } = useProfileCourseIds(senior?.id);
   const [message, setMessage] = useState('');
   const [step, setStep] = useState('form'); // 'form' | 'success'
   const [error, setError] = useState('');
@@ -66,7 +69,7 @@ const handleSubmit = async (e) => {
     const selectedTopic = TOPIC_OPTIONS.find((t) => t.value === topic);
     const requestMessage = [
       `Topic: ${selectedTopic?.label || topic}`,
-      courseId ? `Course ID: ${courseId}` : '',
+            course ? `Course ID: ${course.code}` : '',
       message.trim(),
     ].filter(Boolean).join('\n\n');
 
@@ -168,18 +171,13 @@ const handleSubmit = async (e) => {
               {/* Course (optional) */}
               <div className="form-group">
                 <label className="form-label">Related course (optional)</label>
-                <select
-                  className="form-select"
-                  value={courseId}
-                  onChange={(e) => setCourseId(e.target.value)}
-                >
-                  <option value="">No specific course</option>
-                  {COURSES.map((c) => (
-                    <option key={c.id} value={c.id}>
-                      {c.code} — {c.name}
-                    </option>
-                  ))}
-                </select>
+                <CourseSelect
+                  courses={allCourses}
+                  suggestedIds={theirCourseIds}
+                  suggestedLabel={`${senior.name?.split(' ')[0] || 'They'} took this`}
+                  value={course}
+                  onChange={setCourse}
+                />
               </div>
 
               {/* Message */}
