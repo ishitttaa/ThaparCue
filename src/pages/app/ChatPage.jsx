@@ -6,6 +6,7 @@ import {
   useChatRequest,
   useSendMessage,
 } from '../../hooks/useChat';
+import RateHelper from '../../components/RateHelper';
 
 function formatTime(iso) {
   const date = new Date(iso);
@@ -94,6 +95,9 @@ export default function ChatPage() {
               <div className="flex items-center gap-2">
                 {other?.branch && <span className="badge badge-muted">{other.branch}</span>}
                 <span className="badge badge-success">accepted</span>
+                <span className="badge badge-muted">
+                  {sentByMe ? 'You asked for help' : 'You are helping'}
+                </span>
               </div>
             </div>
           </div>
@@ -150,7 +154,7 @@ export default function ChatPage() {
 
           <div ref={bottomRef} />
         </div>
-
+        <RateHelper request={request} messages={messages} userId={user.id} />
         {send.error && (
           <p className="error-message" role="alert">
             {send.error.message || 'Message could not be sent.'}

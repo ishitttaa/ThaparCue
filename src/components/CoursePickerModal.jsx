@@ -201,7 +201,7 @@ export default function CoursePickerModal({
                   <span style={{ fontWeight: 600 }}>{c.code}</span>
                   <span>{c.name}</span>
                   <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
-                    Y{c.year}
+                    Year{c.year}
                   </span>
                 </button>
               );

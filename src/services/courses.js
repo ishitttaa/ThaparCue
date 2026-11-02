@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { STUDENT_COLS, attachStats } from './profiles';
 
 const COURSE_COLS = 'id, code, name, year, groups';
 
@@ -52,10 +53,11 @@ export async function removeMyCourse(userId, courseId) {
 export async function getCourseStudents(courseId) {
   const { data, error } = await supabase
     .from('profile_courses')
-    .select('profile:profiles(id, name, branch, year, bio)')
+    .select(`profile:profiles(${STUDENT_COLS})`)
     .eq('course_id', courseId);
   if (error) throw error;
-  return (data ?? []).map((row) => row.profile).filter(Boolean);
+  const rows = (data ?? []).map((row) => row.profile).filter(Boolean);
+  return attachStats(rows);
 }
 export async function getProfileCourseIds(profileId) {
   const { data, error } = await supabase

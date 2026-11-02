@@ -8,6 +8,7 @@ import { BRANCHES } from '../../lib/branches';
 import CoursesTakenCard from '../../components/CoursesTakenCard';
 import CoursesPickerModal from '../../components/CoursePickerModal';
 import SkillsCard from '../../components/SkillsCard';
+import ReputationCard from '../../components/ReputationCard';
 
 const BIO_MAX = 300;
 

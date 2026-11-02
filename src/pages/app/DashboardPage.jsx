@@ -7,6 +7,8 @@ import { useStudents } from '../../hooks/useProfiles';
 import { useCourses, useMyCourseIds } from '../../hooks/useCourses';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
+import { useMatchContext } from '../../hooks/useMatchContext';
+import { rankStudents } from '../../lib/matchScore';
 
 function initialsOf(text = '') {
   return (
@@ -31,6 +33,7 @@ export default function DashboardPage() {
   const { data: profile } = useMyProfile();
   const { data: requests = [] } = useRequests();
   const { data: students = [] } = useStudents();
+  const { viewer, targetCourseIds } = useMatchContext();
   const [requestTarget, setRequestTarget] = useState(null);
 
   const displayName = profile?.name || user?.email || 'User';
@@ -42,23 +45,15 @@ export default function DashboardPage() {
   // Recent interactions: latest 3 requests (list pehle se newest-first hai)
   const recent = requests.slice(0, 3);
 
-  // Recommended: apni branch wale pehle, phir senior year, unko chhodkar
-  // jinke saath pending/accepted request pehle se hai
-  const recommended = useMemo(() => {
+    const recommended = useMemo(() => {
     const busyIds = new Set(
       requests
         .filter((r) => ['pending', 'accepted'].includes(r.status))
         .map((r) => (r.from_user === user?.id ? r.to_user : r.from_user))
     );
-    return students
-      .filter((s) => !busyIds.has(s.id))
-      .sort(
-        (a, b) =>
-          Number(b.branch === profile?.branch) - Number(a.branch === profile?.branch) ||
-          (b.currentYear ?? 0) - (a.currentYear ?? 0)
-      )
-      .slice(0, 3);
-  }, [students, requests, profile?.branch, user?.id]);
+    const candidates = students.filter((s) => !busyIds.has(s.id));
+    return rankStudents(candidates, viewer, targetCourseIds).slice(0, 3);
+  }, [students, requests, viewer, targetCourseIds, user?.id]);
 
   const { data: allCourses = [] } = useCourses();
   const { data: myCourseIds = [] } = useMyCourseIds();

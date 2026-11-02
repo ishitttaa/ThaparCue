@@ -10,26 +10,28 @@ import {
 import { toStudent } from '../../lib/students';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
+import { useMyProfile } from '../../hooks/useMyProfile';
+import { rankStudents } from '../../lib/matchScore';
 
 export default function CourseDetailPage() {
   const { id } = useParams(); // URL mein course ka code hai
   const navigate = useNavigate();
   const { user } = useAuth();
-
+  const { data: viewer } = useMyProfile();
   const { data: course, isPending } = useCourse(id);
   const { data: people = [], isPending: peopleLoading } = useCourseStudents(course?.id);
   const { data: myCourseIds = [] } = useMyCourseIds();
   const toggle = useToggleMyCourse();
   const [requestTarget, setRequestTarget] = useState(null);
 
-  // Apne aap ko list se hata do, senior year wale pehle
   const students = useMemo(
     () =>
-      people
-        .filter((p) => p.id !== user?.id)
-        .map(toStudent)
-        .sort((a, b) => (b.currentYear ?? 0) - (a.currentYear ?? 0)),
-    [people, user?.id]
+      rankStudents(
+        people.filter((p) => p.id !== user?.id).map(toStudent),
+        viewer,
+        course ? [course.id] : []
+      ),
+    [people, user?.id, viewer, course]
   );
 
   if (isPending) {

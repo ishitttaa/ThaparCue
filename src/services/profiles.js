@@ -32,8 +32,21 @@ export async function saveMyProfile(userId, { name, branch, year }) {
   if (error) throw error;
   return data;
 }
-const STUDENT_COLS =
-  'id, name, branch, year, bio, profile_skills(level, skill:skills(name)), profile_custom_skills(name, level)';
+export const STUDENT_COLS =
+  'id, name, branch, year, bio, profile_skills(level, skill:skills(name)), profile_custom_skills(name, level), profile_courses(course_id)';
+
+export async function attachStats(rows) {
+  const list = Array.isArray(rows) ? rows : rows ? [rows] : [];
+  if (list.length === 0) return rows;
+  const { data, error } = await supabase.rpc('get_profile_stats', {
+    p_ids: list.map((r) => r.id).slice(0, 200),
+  });
+  if (error) throw error;
+  const byId = new Map((data ?? []).map((s) => [s.profile_id, s]));
+  const merged = list.map((r) => ({ ...r, stats: byId.get(r.id) ?? null }));
+  return Array.isArray(rows) ? merged : merged[0];
+}
+
 export async function getOtherProfiles(userId) {
   const { data, error } = await supabase
     .from('profiles')
@@ -41,7 +54,7 @@ export async function getOtherProfiles(userId) {
     .neq('id', userId)
     .order('name');
   if (error) throw error;
-  return data ?? [];
+  return attachStats(data ?? []);
 }
 
 export async function getProfileById(id) {
@@ -54,7 +67,7 @@ export async function getProfileById(id) {
     if (error.code === '22P02') return null; // URL mein galat id
     throw error;
   }
-  return data;
+  return data ? attachStats(data) : data;
 }
 export async function updateMyProfile(userId, { name, branch, year, bio }) {
   const { data, error } = await supabase
@@ -90,5 +103,5 @@ export async function getStudentsWithSkill(skillId, userId) {
     .in('id', ids)
     .order('name');
   if (error) throw error;
-  return data ?? [];
+  return attachStats(data ?? []);
 }

@@ -9,18 +9,16 @@ export default function SeniorCard({ senior, onRequest }) {
     currentYear,
     reliabilityScore,
     responseRate,
-    avgResponseTime,
-    skills = [],
     rating,
-    totalInteractions,
+    ratingCount = 0,
+    skills = [],
     initials,
     colorHue,
     bio,
+    matchScore,
+    isNew,
   } = senior;
 
-  const hasStats = rating != null;
-  const isRealProfile =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
   return (
     <div className="senior-card glass-card">
       <div className="senior-card-header">
@@ -39,34 +37,37 @@ export default function SeniorCard({ senior, onRequest }) {
           )}
         </div>
         <div className="senior-card-info">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2" style={{ flexWrap: 'wrap' }}>
             <h3 className="senior-card-name font-display">{name}</h3>
             {isAlumni && <span className="badge badge-success">Alumni</span>}
             {!isAlumni && currentYear && (
               <span className="badge badge-accent">Y{currentYear}</span>
             )}
+            {matchScore != null && (
+              <span className="badge badge-success" title="How well this student matches what you need">
+                {Math.round(matchScore * 100)}% match
+              </span>
+            )}
           </div>
           <p className="senior-card-branch text-secondary">{branch}</p>
-          {hasStats && (
-            <div className="senior-card-stats">
-              <span className="senior-stat">
-                <span className="senior-stat-val">⭐ {rating.toFixed(1)}</span>
-              </span>
-              <span className="senior-stat-sep">·</span>
-              <span className="senior-stat">
-                <span className="senior-stat-val">{responseRate}%</span>
-                <span className="senior-stat-lbl"> response</span>
-              </span>
-              <span className="senior-stat-sep">·</span>
-              <span className="senior-stat">
-                <span className="senior-stat-val">{avgResponseTime}</span>
-              </span>
-              <span className="senior-stat-sep">·</span>
-              <span className="senior-stat">
-                <span className="senior-stat-lbl">{totalInteractions} guided</span>
-              </span>
-            </div>
-          )}
+          <div className="senior-card-stats">
+            <span className="senior-stat">
+              {ratingCount > 0 ? (
+                <span className="senior-stat-val">⭐ {rating.toFixed(1)} ({ratingCount})</span>
+              ) : (
+                <span className="senior-stat-lbl">{isNew ? 'New' : 'No ratings yet'}</span>
+              )}
+            </span>
+            {responseRate != null && (
+              <>
+                <span className="senior-stat-sep">·</span>
+                <span className="senior-stat">
+                  <span className="senior-stat-val">{responseRate}%</span>
+                  <span className="senior-stat-lbl"> response</span>
+                </span>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
@@ -101,21 +102,15 @@ export default function SeniorCard({ senior, onRequest }) {
           </div>
         )}
         <div className="senior-card-actions">
-         {isRealProfile ? (
-          <>
-            <Link to={`/senior/${id}`} className="btn btn-ghost btn-sm">
-              View Profile
-            </Link>
-            {onRequest && (
-              <button className="btn btn-primary btn-sm" onClick={() => onRequest(senior)}>
-                Request
-              </button>
-            )}
-          </>
-        ) : (
-          <span className="badge badge-muted">Sample profile</span>
-        )}
-      </div>
+          <Link to={`/senior/${id}`} className="btn btn-ghost btn-sm">
+            View Profile
+          </Link>
+          {onRequest && (
+            <button className="btn btn-primary btn-sm" onClick={() => onRequest(senior)}>
+              Request
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
