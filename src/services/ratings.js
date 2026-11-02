@@ -12,7 +12,7 @@ export async function getMyRating(requestId, userId) {
 }
 
 export async function rateHelper(requestId, stars) {
-  const { error } = await supabase.rpc('rate_helper', {
+  const { error } = await supabase.rpc('rate_conversation', {
     p_request_id: requestId,
     p_stars: stars,
   });
