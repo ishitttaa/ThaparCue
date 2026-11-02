@@ -297,6 +297,7 @@ export default function ProfilePage() {
             </div>
              <CoursesTakenCard branch={profile.branch} />
              <SkillsCard />
+             <ReputationCard />
           </div>
         </div>
       </div>
