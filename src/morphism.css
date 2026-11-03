@@ -1,0 +1,106 @@
+:root {
+  --clay-bg: #f3e8ff;
+  --clay-purple: #c4a1ff;
+  --clay-pink: #ffb3d9;
+  --clay-blue: #a5d8ff;
+  --clay-yellow: #ffe28a;
+  --ink: #2d2250;
+  --glass-bg: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.35);
+}
+
+/* Sideways scroll roko, bina sticky navbar tode */
+html {
+  overflow-x: clip;
+}
+
+/* ---------- CLAYMORPHISM ---------- */
+.clay {
+  background: var(--clay-purple);
+  border-radius: 28px;
+  box-shadow:
+    10px 10px 24px rgba(120, 80, 200, 0.35),
+    -8px -8px 20px rgba(255, 255, 255, 0.7),
+    inset 6px 6px 12px rgba(255, 255, 255, 0.55),
+    inset -6px -6px 14px rgba(110, 70, 190, 0.35);
+  transition: transform 0.25s cubic-bezier(.34, 1.56, .64, 1), box-shadow 0.25s;
+}
+.clay:hover { transform: translateY(-4px) scale(1.01); }
+.clay:active {
+  transform: scale(0.97);
+  box-shadow:
+    4px 4px 10px rgba(120, 80, 200, 0.3),
+    inset 8px 8px 16px rgba(110, 70, 190, 0.4),
+    inset -4px -4px 10px rgba(255, 255, 255, 0.5);
+}
+.clay-pink   { background: var(--clay-pink); }
+.clay-blue   { background: var(--clay-blue); }
+.clay-yellow { background: var(--clay-yellow); }
+
+/* ---------- GLASSMORPHISM ---------- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.25);
+}
+
+/* ---------- NEUMORPHISM ---------- */
+.neu {
+  background: #e6e0f5;
+  border-radius: 24px;
+  box-shadow: 9px 9px 18px #c3bdd6, -9px -9px 18px #ffffff;
+}
+.neu-inset {
+  background: #e6e0f5;
+  border-radius: 24px;
+  box-shadow: inset 6px 6px 12px #c3bdd6, inset -6px -6px 12px #ffffff;
+}
+
+/* ---------- Animated blob background ---------- */
+.blob-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: linear-gradient(135deg, #f3e8ff, #dbeafe);
+}
+.blob-bg span {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.7;
+  will-change: transform;
+  animation: blobDrift 14s ease-in-out infinite;
+}
+.blob-bg span:nth-child(1) { width: 380px; height: 380px; background: var(--clay-pink);   top: -80px;    left: -80px; }
+.blob-bg span:nth-child(2) { width: 420px; height: 420px; background: var(--clay-blue);   bottom: -100px; right: -60px; animation-delay: -5s; }
+.blob-bg span:nth-child(3) { width: 300px; height: 300px; background: var(--clay-yellow); top: 40%;       left: 45%;   animation-delay: -9s; }
+
+/* Naam badal diya (float -> blobDrift) taaki card wali animation se na takraye */
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%      { transform: translate(30px, -25px) scale(1.08); }
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 39, 0.16) 0%,
+    rgba(122, 28, 28, 0.06) 45%,
+    transparent 70%
+  );
+  filter: blur(14px);
+  will-change: transform;
+}

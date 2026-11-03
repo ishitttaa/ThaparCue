@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import useLandingAnimations from '../../hooks/useLandingAnimations';
 
 const FEATURES = [
   {
@@ -34,16 +35,17 @@ const STATS = [
 
 export default function LandingPage() {
   const { demoLogin } = useAuth();
+  const root = useLandingAnimations();
 
   return (
-    <div className="landing-page">
+    <div className="landing-page" ref={root}>
       {/* Decorative orbs */}
       <div className="glow-orb glow-orb-primary" style={{ width: 500, height: 500, top: -100, left: -150 }} />
       <div className="glow-orb glow-orb-violet" style={{ width: 400, height: 400, top: 200, right: -100 }} />
 
       {/* ── HERO ── */}
       <section className="landing-hero container">
-        <div className="landing-hero-content anim-fade-up">
+        <div className="landing-hero-content">
           <span className="section-label" style={{ justifyContent: 'center', marginBottom: 'var(--space-4)' }}>
             Thapar University · Peer Knowledge
           </span>
@@ -72,12 +74,12 @@ export default function LandingPage() {
         </div>
 
         {/* Hero visual */}
-        <div className="landing-hero-visual anim-float">
+        <div className="landing-hero-visual">
           <div className="hero-card glass-card">
             <div className="hero-card-row">
               <div className="avatar-placeholder avatar-md" style={{ background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))', fontSize: '0.85rem' }}>RM</div>
               <div>
-                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Tripti · COE 3rd Year</p>
+                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Roopanshi Marwaha · COE 3rd Year</p>
                 <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>System Design · OS · DSA</p>
               </div>
               <span className="badge badge-success" style={{ marginLeft: 'auto' }}>94 score</span>
@@ -109,7 +111,7 @@ export default function LandingPage() {
       {/* ── FEATURES ── */}
       <section className="landing-features container">
         <div className="landing-section-header">
-          <span className="section-label">Why SkillLink</span>
+          <span className="section-label">Why ThaparCue</span>
           <h2 className="font-display" style={{ fontSize: 'var(--text-3xl)', marginTop: 'var(--space-3)' }}>
             Structured guidance that actually helps
           </h2>
