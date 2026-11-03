@@ -1307,3 +1307,21 @@ html { scroll-behavior: smooth; }
 @media (max-width: 480px) {
   .landing-ctas .btn { flex: 1 1 100%; }
 }
+
+/* ── CTA BAND spacing ── */
+.landing-cta-band .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+}
+.landing-cta-band h2,
+.landing-cta-band p {
+  margin: 0;
+}
+.landing-cta-band p {
+  max-width: 560px;
+}
+.landing-cta-band .btn {
+  margin-top: var(--space-2);
+}

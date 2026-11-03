@@ -85,3 +85,22 @@ html {
   0%, 100% { transform: translate(0, 0) scale(1); }
   50%      { transform: translate(30px, -25px) scale(1.08); }
 }
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(
+    circle,
+    rgba(201, 162, 39, 0.16) 0%,
+    rgba(122, 28, 28, 0.06) 45%,
+    transparent 70%
+  );
+  filter: blur(14px);
+  will-change: transform;
+}
