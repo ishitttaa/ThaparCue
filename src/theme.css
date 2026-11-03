@@ -1352,3 +1352,27 @@ html { scroll-behavior: smooth; }
   gap: 6px;
 }
 .navbar-logo { line-height: 1; }
+
+/* ── GLASS NAVBAR ── */
+.navbar {
+  background: rgba(122, 28, 28, 0.82);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  border-bottom: 2px solid rgba(232, 197, 90, 0.9);
+  transition: background 250ms ease, box-shadow 250ms ease;
+}
+.navbar-inner {
+  transition: height 250ms ease;
+}
+.navbar.navbar-scrolled {
+  background: rgba(94, 20, 20, 0.88);
+  box-shadow: 0 10px 30px rgba(59, 13, 13, 0.35);
+}
+.navbar.navbar-scrolled .navbar-inner {
+  height: 56px;
+}
+.navbar-mobile-menu {
+  background: rgba(94, 20, 20, 0.92);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
