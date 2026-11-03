@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useRequests, useRespondToRequest } from '../../hooks/useRequests';
 import RequestCard from '../../components/RequestCard';
+import { useUnreadCounts } from '../../hooks/useUnread';
 
 const TABS = ['all', 'pending', 'accepted', 'rejected'];
 
@@ -11,6 +12,7 @@ export default function InboxPage() {
   const [activeTab, setActiveTab] = useState('all');
   const { data: requests = [], isPending, error, refetch } = useRequests();
   const respond = useRespondToRequest();
+  const { data: unreadCount = {} } = useUnreadCounts();
 
   if (isPending) {
     return <div className="page-container"><p>Loading inbox...</p></div>;
@@ -69,6 +71,7 @@ export default function InboxPage() {
               onRespond={(requestId, status) =>
                 respond.mutate({ requestId, status })
               }
+              unread={unreadCount[request.id] || 0}
             />
           ))}
         </div>

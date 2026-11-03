@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import InboxBadge from '../InboxBadge';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -23,7 +24,7 @@ export default function Navbar() {
         { to: '/explore', label: 'Explore' },
         { to: '/courses', label: 'Courses' },
         { to: '/skills', label: 'Skills' },
-        { to: '/inbox', label: 'Inbox' },
+        { to: '/inbox', label: 'Inbox', badge: true },
       ]
     : [
         { to: '/courses', label: 'Courses' },
@@ -53,6 +54,7 @@ export default function Navbar() {
               }
             >
               {link.label}
+              {link.badge && <InboxBadge />}
             </NavLink>
           ))}
         </div>
@@ -111,6 +113,7 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
+              {link.badge && <InboxBadge />}
             </NavLink>
           ))}
           <div className="navbar-mobile-actions">

@@ -10,7 +10,7 @@ function parseRequestMessage(raw = '') {
   return { topic, courseId, message };
 }
 
-export default function RequestCard({ request, userId, busy, onRespond }) {
+export default function RequestCard({ request, userId, busy, onRespond ,unread = 0 }) {
   const sentByMe = request.from_user === userId;
   const other = sentByMe ? request.receiver : request.sender;
   const { topic, courseId, message } = parseRequestMessage(request.message || '');
@@ -65,8 +65,11 @@ export default function RequestCard({ request, userId, busy, onRespond }) {
 
       {request.status === 'accepted' && (
         <div className="request-actions">
-          <Link to={`/inbox/${request.id}`} className="btn btn-primary">
+                    <Link to={`/inbox/${request.id}`} className="btn btn-primary">
             Open Chat →
+            {unread > 0 && (
+              <span style={{ marginLeft: 8, fontWeight: 700 }}>· {unread} new</span>
+            )}
           </Link>
         </div>
       )}

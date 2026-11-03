@@ -7,6 +7,7 @@ import {
   useSendMessage,
 } from '../../hooks/useChat';
 import RateHelper from '../../components/RateHelper';
+import { useMarkChatRead } from '../../hooks/useUnread';
 
 function formatTime(iso) {
   const date = new Date(iso);
@@ -29,7 +30,8 @@ export default function ChatPage() {
   const { data: request, isPending, error: requestError } = useChatRequest(id);
   const { data: messages = [] } = useChatMessages(id, !!request);
   const send = useSendMessage(id);
-
+  useMarkChatRead(id, messages.length, !!request);
+  
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length]);
