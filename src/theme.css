@@ -1325,3 +1325,30 @@ html { scroll-behavior: smooth; }
 .landing-cta-band .btn {
   margin-top: var(--space-2);
 }
+
+/* ── NAVBAR: height aur alignment fix ── */
+.navbar-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  height: 68px;
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.navbar-actions {
+  display: flex;
+  align-items: center;
+}
+.navbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.navbar-logo { line-height: 1; }
