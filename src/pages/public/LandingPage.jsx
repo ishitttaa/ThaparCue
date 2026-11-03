@@ -109,7 +109,7 @@ export default function LandingPage() {
       {/* ── FEATURES ── */}
       <section className="landing-features container">
         <div className="landing-section-header">
-          <span className="section-label">Why SkillLink</span>
+          <span className="section-label">Why ThaparCue</span>
           <h2 className="font-display" style={{ fontSize: 'var(--text-3xl)', marginTop: 'var(--space-3)' }}>
             Structured guidance that actually helps
           </h2>

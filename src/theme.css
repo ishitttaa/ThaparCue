@@ -1278,3 +1278,32 @@ html { scroll-behavior: smooth; }
     transition: none !important;
   }
 }
+
+/* ── HERO CARD: sirf upar-neeche float, side me nahi ── */
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+.hero-card { animation: cardFloat 4s ease-in-out infinite; }
+.landing-hero-visual.anim-float { animation: none; }
+
+/* ── MOBILE FIXES ── */
+@media (max-width: 900px) {
+  .landing-hero {
+    gap: var(--space-10);
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-10);
+  }
+  .landing-hero-visual {
+    margin-top: var(--space-4);
+    width: 100%;
+  }
+  .hero-card {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .landing-ctas .btn { flex: 1 1 100%; }
+}
