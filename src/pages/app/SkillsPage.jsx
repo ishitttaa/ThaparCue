@@ -10,6 +10,9 @@ import { useStudentsWithSkill } from '../../hooks/useProfiles';
 import SkillCard from '../../components/SkillCard';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
+import { useMatchContext } from '../../hooks/useMatchContext';
+import { rankStudents } from '../../lib/matchScore';
+import { levelRank } from '../../lib/skillLevels';
 
 const PAGE_SIZE = 60;
 const KINDS = [
@@ -35,10 +38,22 @@ export default function SkillsPage() {
   const [requestTarget, setRequestTarget] = useState(null);
 
   const selected = skills.find((s) => s.id === selectedId) ?? null;
-    const { data: students = [], isPending: studentsLoading } = useStudentsWithSkill(
+  const { data: rawStudents = [], isPending: studentsLoading } = useStudentsWithSkill(
     selected?.id,
     selected?.name
   );
+  const { viewer, targetCourseIds } = useMatchContext();
+
+  const students = useMemo(() => {
+    const levelOf = (s) =>
+      levelRank(s.skills.find((k) => k.name === selected?.name)?.proficiency);
+    return rankStudents(rawStudents, viewer, targetCourseIds).sort(
+      (a, b) =>
+        Math.round(b.matchScore * 100) - Math.round(a.matchScore * 100) ||
+        levelOf(b) - levelOf(a) ||
+        a.name.localeCompare(b.name)
+    );
+  }, [rawStudents, viewer, targetCourseIds, selected?.name]);
   const categories = useMemo(() => {
     const names = skills
       .filter((s) => kind === 'all' || s.kind === kind)
