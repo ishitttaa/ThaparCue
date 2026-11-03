@@ -6,11 +6,11 @@ import { useCourses, useProfileCourseIds } from '../hooks/useCourses';
 import CourseSelect from './CourseSelect';
 import { useAuth } from '../context/AuthContext';
 
-export default function RequestModal({ senior, onClose }) {
+export default function RequestModal({ senior, onClose, initialCourse = null, initialTopic = '' }) {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [topic, setTopic] = useState('');
-  const [course, setCourse] = useState(null);
+  const [topic, setTopic] = useState(initialTopic);
+  const [course, setCourse] = useState(initialCourse);
   const { data: allCourses = [] } = useCourses();
   const { data: theirCourseIds = [] } = useProfileCourseIds(senior?.id);
   const [message, setMessage] = useState('');
