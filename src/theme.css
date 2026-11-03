@@ -1799,3 +1799,31 @@ html { scroll-behavior: smooth; }
     margin-top: var(--space-4);
   }
 }
+
+/* ── LOGIN v7: phone pe sirf login, photo nahi ── */
+@media (max-width: 900px) {
+  .login-page::before,
+  .login-page::after {
+    display: none;
+  }
+
+  .login-page {
+    justify-content: center;
+    align-items: center;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: var(--space-8) 20px;
+    justify-content: center;
+  }
+
+  .login-card {
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .login-container::before {
+    display: none;
+  }
+}
