@@ -1,7 +1,8 @@
 import { supabase } from '../lib/supabase';
 import { STUDENT_COLS, attachStats } from './profiles';
 
-const COURSE_COLS = 'id, code, name, year, groups';
+const COURSE_COLS =
+  'id, code, name, year, groups, credits, l, t, p, assessment, prerequisites';
 
 export async function getAllCourses() {
   const { data, error } = await supabase

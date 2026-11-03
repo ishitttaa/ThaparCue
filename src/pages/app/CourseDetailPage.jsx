@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useMyProfile } from '../../hooks/useMyProfile';
 import {
   useCourse,
   useCourseStudents,
@@ -8,21 +9,29 @@ import {
   useToggleMyCourse,
 } from '../../hooks/useCourses';
 import { toStudent } from '../../lib/students';
+import { rankStudents } from '../../lib/matchScore';
+import { TOPIC_OPTIONS } from '../../lib/topics';
+import CourseInfoCard from '../../components/CourseInfoCard';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
-import { useMyProfile } from '../../hooks/useMyProfile';
-import { rankStudents } from '../../lib/matchScore';
+
+const TOP_N = 3;
+
+const COURSE_TOPIC =
+  TOPIC_OPTIONS.find((t) => /course/i.test(`${t.value} ${t.label}`))?.value ?? '';
 
 export default function CourseDetailPage() {
   const { id } = useParams(); // URL mein course ka code hai
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: viewer } = useMyProfile();
+
   const { data: course, isPending } = useCourse(id);
   const { data: people = [], isPending: peopleLoading } = useCourseStudents(course?.id);
   const { data: myCourseIds = [] } = useMyCourseIds();
   const toggle = useToggleMyCourse();
   const [requestTarget, setRequestTarget] = useState(null);
+  const [showAll, setShowAll] = useState(false);
 
   const students = useMemo(
     () =>
@@ -59,6 +68,7 @@ export default function CourseDetailPage() {
   }
 
   const taken = myCourseIds.includes(course.id);
+  const shown = showAll ? students : students.slice(0, TOP_N);
 
   return (
     <div className="page-content">
@@ -82,9 +92,9 @@ export default function CourseDetailPage() {
             </h1>
             <div className="flex gap-2" style={{ marginTop: 'var(--space-3)', flexWrap: 'wrap' }}>
               <span className="badge badge-accent">Year {course.year}</span>
-              <span className="badge badge-muted">
-                {course.groups.length} branch{course.groups.length !== 1 ? 'es' : ''}
-              </span>
+              {course.credits != null && (
+                <span className="badge badge-muted">{course.credits} credits</span>
+              )}
             </div>
             <button
               type="button"
@@ -110,27 +120,20 @@ export default function CourseDetailPage() {
         </div>
 
         <div className="course-detail-grid">
-          {/* Left: about */}
+          {/* Left: course info */}
           <div className="course-detail-main">
-            <div className="glass-card profile-section anim-fade-up" style={{ animationDelay: '0.1s' }}>
-              <h2 className="font-display section-title">Offered in</h2>
-              <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                {course.groups.map((g) => (
-                  <span key={g} className="tag">{g}</span>
-                ))}
-              </div>
-              <p className="text-muted" style={{ fontSize: 'var(--text-sm)', marginTop: 'var(--space-4)' }}>
-                Ratings, grade cutoffs and senior tips will show up here once students
-                start sharing their experience.
-              </p>
-            </div>
+            <CourseInfoCard course={course} />
           </div>
 
-          {/* Right: students who took it */}
+          {/* Right: top matches */}
           <div className="anim-fade-up" style={{ animationDelay: '0.25s' }}>
-            <h2 className="font-display" style={{ fontSize: 'var(--text-xl)', marginBottom: 'var(--space-4)' }}>
-              Students who took this
+            <h2 className="font-display" style={{ fontSize: 'var(--text-xl)', marginBottom: 4 }}>
+              {showAll ? 'Everyone who took this' : `Top ${TOP_N} for you`}
             </h2>
+            <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginBottom: 'var(--space-4)' }}>
+              Ranked by course match, recent activity, branch and year, reliability and response rate.
+            </p>
+
             {peopleLoading ? (
               <p>Loading students...</p>
             ) : students.length === 0 ? (
@@ -141,18 +144,35 @@ export default function CourseDetailPage() {
                 </p>
               </div>
             ) : (
-              <div className="flex-col gap-4" style={{ display: 'flex' }}>
-                {students.map((s) => (
-                  <SeniorCard key={s.id} senior={s} onRequest={setRequestTarget} />
-                ))}
-              </div>
+              <>
+                <div className="flex-col gap-4" style={{ display: 'flex' }}>
+                  {shown.map((s) => (
+                    <SeniorCard key={s.id} senior={s} onRequest={setRequestTarget} />
+                  ))}
+                </div>
+                {students.length > TOP_N && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary w-full"
+                    style={{ marginTop: 'var(--space-4)' }}
+                    onClick={() => setShowAll((v) => !v)}
+                  >
+                    {showAll ? `Show top ${TOP_N} only` : `Show all (${students.length})`}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
       </div>
 
       {requestTarget && (
-        <RequestModal senior={requestTarget} onClose={() => setRequestTarget(null)} />
+        <RequestModal
+          senior={requestTarget}
+          initialCourse={course}
+          initialTopic={COURSE_TOPIC}
+          onClose={() => setRequestTarget(null)}
+        />
       )}
     </div>
   );
