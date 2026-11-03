@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext'
 import './index.css'
 import './theme.css' //new columns override purane columns
 import App from './App.jsx'
+import './morphism.css'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
