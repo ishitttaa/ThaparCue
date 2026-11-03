@@ -1547,15 +1547,219 @@ html { scroll-behavior: smooth; }
   box-shadow: 4px 6px 14px rgba(94, 20, 20, 0.3);
 }
 
-/* ---------- DASHBOARD quick actions ---------- */
-.quick-action-card {
-  border-radius: 24px;
-}
-.quick-action-card:hover {
-  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+/* ── LOGIN: split layout v3 (floating photo panel) ── */
+.login-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  background:
+    radial-gradient(circle at 85% 12%, rgba(201, 162, 39, 0.16) 0%, transparent 38%),
+    radial-gradient(circle at 70% 95%, rgba(122, 28, 28, 0.12) 0%, transparent 42%),
+    var(--bg-base);
 }
 
-/* Modal bhi clay */
-.modal-box {
-  border-radius: 26px;
+/* Left: rounded floating photo panel */
+.login-page::before {
+  content: '';
+  position: fixed;
+  top: 24px;
+  bottom: 24px;
+  left: 24px;
+  width: calc(52% - 24px);
+  z-index: -1;
+  border-radius: 28px;
+  background:
+    linear-gradient(180deg, transparent 55%, rgba(59, 13, 13, 0.85) 100%),
+    url('/thapar.jpg') 35% center / cover no-repeat;
+  box-shadow: 0 24px 50px rgba(59, 13, 13, 0.3);
+  animation: loginPhotoIn 900ms ease both;
+}
+
+/* Photo ke andar tagline */
+.login-page::after {
+  content: "Learn from seniors who've been exactly where you are.";
+  position: fixed;
+  left: 56px;
+  bottom: 60px;
+  width: min(calc(52% - 104px), 460px);
+  z-index: 1;
+  padding-left: 16px;
+  border-left: 4px solid #c9a227;
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 1.9vw, 1.9rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  animation: loginRise 800ms 300ms ease both;
+}
+
+/* Right: logo + steps + card */
+.login-container {
+  position: relative;
+  width: 48%;
+  max-width: none;
+  padding: var(--space-8) 3vw;
+  align-items: center;
+  animation: loginRise 700ms 150ms ease both;
+}
+.login-card {
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow:
+    0 24px 50px rgba(94, 20, 20, 0.16),
+    -6px -6px 16px rgba(255, 255, 255, 0.9),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.9);
+}
+
+/* Cream background pe logo/steps */
+.login-logo { color: var(--accent); }
+.login-logo .text-gradient {
+  -webkit-text-fill-color: #c9a227;
+  color: #c9a227;
+}
+.login-step-dot {
+  background: rgba(122, 28, 28, 0.15);
+  color: var(--accent);
+}
+.login-step-dot.active {
+  background: #c9a227;
+  color: #3b0d0d;
+}
+.login-step-label { color: var(--text-muted); }
+.login-step-label.text-primary { color: var(--accent); }
+.login-step-connector { background: rgba(122, 28, 28, 0.25); }
+.login-step-connector.filled { background: #c9a227; }
+
+@keyframes loginRise {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes loginPhotoIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Mobile: photo aur tagline hata do, sirf card */
+@media (max-width: 900px) {
+  .login-page::before,
+  .login-page::after { display: none; }
+  .login-container { width: 100%; padding: var(--space-8) var(--space-4); }
+}
+
+/* Card ko photo ke thoda paas aur beech me laao */
+.login-container {
+  width: 48%;
+  padding-left: 2vw;
+  padding-right: 4vw;
+  align-items: center;
+}
+.login-card {
+  max-width: 480px;
+}
+
+/* ── LOGIN v4: sharp edge-to-edge photo, no rounded ── */
+.login-page::before {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 52%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Tagline ab photo ke kinare ke hisaab se */
+.login-page::after {
+  left: 48px;
+  bottom: 56px;
+  width: min(calc(52% - 96px), 460px);
+}
+
+/* Card ko photo ke paas aur beech me */
+.login-container {
+  width: 48%;
+  padding-left: 2vw;
+  padding-right: 4vw;
+}
+
+/* ── LOGIN v5: right side detail + proper mobile ── */
+
+/* Right side: halka dot-grid + gold/maroon glow */
+.login-page {
+  background:
+    radial-gradient(rgba(122, 28, 28, 0.13) 1.5px, transparent 1.5px) 0 0 / 24px 24px,
+    radial-gradient(circle at 88% 10%, rgba(201, 162, 39, 0.22) 0%, transparent 38%),
+    radial-gradient(circle at 60% 100%, rgba(122, 28, 28, 0.14) 0%, transparent 45%),
+    var(--bg-base);
+}
+
+/* Card ke peeche gold ring (decoration) */
+.login-container::before {
+  content: '';
+  position: absolute;
+  top: 6%;
+  right: -4%;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  border: 36px solid rgba(201, 162, 39, 0.14);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Card ke neeche trust line */
+.login-container::after {
+  content: '🔒  Sirf verified @thapar.edu students ke liye';
+  margin-top: var(--space-5);
+  font-size: var(--text-xs);
+  letter-spacing: 0.02em;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+/* ── MOBILE: photo upar banner, neeche card ── */
+@media (max-width: 900px) {
+  .login-page {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+  }
+
+  .login-page::before {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: auto;
+    width: 100%;
+    height: 190px;
+    border-radius: 0 0 28px 28px;
+    background:
+      linear-gradient(180deg, rgba(59, 13, 13, 0.1) 0%, rgba(59, 13, 13, 0.8) 100%),
+      url('/thapar.jpg') center 35% / cover no-repeat;
+  }
+
+  .login-page::after {
+    display: block;
+    position: absolute;
+    top: 118px;
+    left: 20px;
+    bottom: auto;
+    width: calc(100% - 40px);
+    font-size: 1.05rem;
+    padding-left: 12px;
+  }
+
+  .login-container {
+    width: 100%;
+    padding: 210px var(--space-4) var(--space-8);
+  }
+  .login-container::before { display: none; }
+  .login-card { max-width: 100%; }
 }
