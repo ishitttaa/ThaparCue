@@ -1763,3 +1763,39 @@ html { scroll-behavior: smooth; }
   .login-container::before { display: none; }
   .login-card { max-width: 100%; }
 }
+
+/* ── LOGIN v6: mobile polish ── */
+@media (max-width: 900px) {
+  .login-page::before {
+    height: 240px;
+    border-radius: 0 0 24px 24px;
+    background:
+      linear-gradient(180deg, rgba(59, 13, 13, 0) 40%, rgba(59, 13, 13, 0.85) 100%),
+      url('/thapar.jpg') center 55% / cover no-repeat;
+  }
+
+  .login-page::after {
+    top: auto;
+    bottom: auto;
+    top: 176px;
+    left: 24px;
+    width: calc(100% - 48px);
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+
+  .login-container {
+    justify-content: flex-start;
+    padding: 262px 20px 32px;
+  }
+
+  .login-card {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: var(--space-6);
+  }
+
+  .login-container::after {
+    margin-top: var(--space-4);
+  }
+}
