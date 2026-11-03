@@ -26,13 +26,13 @@ export default function useLandingAnimations() {
       )
 
       // ---------- SCROLL REVEAL (batch) ----------
-      const reveal = (selector, y = 60) => {
+      const reveal = (selector, y = 60, start = 'top 88%') => {
         const items = gsap.utils.toArray(selector)
         if (!items.length) return
         // CSS transition aur GSAP transform aapas me jhatka na karein
         gsap.set(items, { opacity: 0, y, transition: 'none' })
         ScrollTrigger.batch(items, {
-          start: 'top 88%',
+          start,
           once: true,
           onEnter: (batch) =>
             gsap.to(batch, {
@@ -49,7 +49,7 @@ export default function useLandingAnimations() {
       reveal('.landing-section-header', 30)
       reveal('.landing-feature-card')
       reveal('.landing-step')
-      reveal('.landing-cta-band .container > *', 30)
+      reveal('.landing-cta-band .container > *', 30, 'top 100%')
 
       // ---------- STATS COUNT-UP ----------
       gsap.utils.toArray('.landing-stat-val').forEach((el) => {
@@ -76,6 +76,9 @@ export default function useLandingAnimations() {
             }),
         })
       })
+
+      // Fonts/images load hone ke baad positions dobara calculate karo
+      window.addEventListener('load', () => ScrollTrigger.refresh(), { once: true })
     },
     { scope: root }
   )
