@@ -26,11 +26,11 @@ export default function usePageTransition() {
       if (pages.length && !reduce) {
         gsap.fromTo(
           pages,
-          { opacity: 0, y: 28 },
+          { opacity: 0, y: 12 },
           {
             opacity: 1,
             y: 0,
-            duration: 0.55,
+            duration: 0.3,
             ease: 'power3.out',
             clearProps: 'transform,opacity',
           }
