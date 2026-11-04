@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useLandingAnimations from '../../hooks/useLandingAnimations';
+import useSpotlight from '../../hooks/useSpotlight';
 
 const FEATURES = [
   {
@@ -33,9 +34,21 @@ const STATS = [
   { val: '200+', label: 'Interactions' },
 ];
 
+// Headline ko words mein todta hai, har word neeche se slide hoke aata hai
+function Words({ text, start = 0, className = '' }) {
+  return text.split(' ').map((word, i) => (
+    <span key={`${word}-${i}`}>
+      <span className="word" style={{ '--i': start + i }}>
+        <span className={className}>{word}</span>
+      </span>{' '}
+    </span>
+  ));
+}
+
 export default function LandingPage() {
   const { demoLogin } = useAuth();
   const root = useLandingAnimations();
+  useSpotlight();
 
   return (
     <div className="landing-page" ref={root}>
@@ -50,8 +63,9 @@ export default function LandingPage() {
             Thapar University · Peer Knowledge
           </span>
           <h1 className="landing-title font-display">
-            Learn from seniors who've<br />
-            <span className="text-gradient">been exactly where you are</span>
+            <Words text="Learn from seniors who've" />
+            <br />
+            <Words text="been exactly where you are" start={4} className="hero-shimmer" />
           </h1>
           <p className="landing-subtitle text-secondary">
             ThaparCue connects you with verified seniors who've taken your courses,
@@ -75,7 +89,7 @@ export default function LandingPage() {
 
         {/* Hero visual */}
         <div className="landing-hero-visual">
-          <div className="hero-card glass-card">
+          <div className="hero-card glass-card spot">
             <div className="hero-card-row">
               <div className="avatar-placeholder avatar-md" style={{ background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))', fontSize: '0.85rem' }}>RM</div>
               <div>
@@ -118,7 +132,7 @@ export default function LandingPage() {
         </div>
         <div className="landing-features-grid">
           {FEATURES.map((f) => (
-            <div key={f.title} className="landing-feature-card glass-card">
+            <div key={f.title} className="landing-feature-card glass-card spot">
               <div className="landing-feature-icon">{f.icon}</div>
               <h3 className="font-display" style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-2)' }}>
                 {f.title}
@@ -141,7 +155,7 @@ export default function LandingPage() {
         </div>
         <div className="landing-steps-list">
           {STEPS.map((step, i) => (
-            <div key={step.num} className="landing-step">
+            <div key={step.num} className="landing-step spot">
               <div className="landing-step-num font-display">{step.num}</div>
               {i < STEPS.length - 1 && <div className="landing-step-line" />}
               <div className="landing-step-content">
