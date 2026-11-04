@@ -49,21 +49,6 @@ export default function useLandingAnimations() {
       reveal('.landing-feature-card')
       reveal('.landing-step')
 
-      // ---------- CTA BAND: simple fade-up, no overshoot ----------
-      gsap.from('.landing-cta-band .container > *', {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: 'power3.out',
-        clearProps: 'transform,opacity',
-        scrollTrigger: {
-          trigger: '.landing-cta-band',
-          start: 'top 85%',
-          once: true,
-        },
-      })
-
       // ---------- STATS COUNT-UP ----------
       gsap.utils.toArray('.landing-stat-val').forEach((el) => {
         const raw = el.dataset.raw || el.textContent
