@@ -6,6 +6,31 @@ import CourseListCard from '../../components/CourseListCard';
 
 const PAGE_SIZE = 60;
 
+// ── Skeleton (shimmer) ──
+function Sk({ w = '100%', h = 14, r = 10 }) {
+  return <div className="skeleton" style={{ width: w, height: h, borderRadius: r }} />;
+}
+
+function SkCourseCard() {
+  return (
+    <div className="glass-card skeleton-card">
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ flex: 1, display: 'grid', gap: 8 }}>
+          <Sk w="35%" h={11} />
+          <Sk w="80%" h={18} />
+        </div>
+        <Sk w={64} h={24} r={999} />
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Sk w={70} h={24} r={999} />
+        <Sk w={90} h={24} r={999} />
+      </div>
+      <Sk h={12} />
+      <Sk w="60%" h={12} />
+    </div>
+  );
+}
+
 export default function CoursesPage() {
   const { data: profile } = useMyProfile();
   const { data: courses = [], isPending, error } = useCourses();
@@ -94,7 +119,13 @@ export default function CoursesPage() {
           </div>
         </div>
 
-        {isPending && <p>Loading courses...</p>}
+        {isPending && (
+          <div className="courses-grid">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <SkCourseCard key={i} />
+            ))}
+          </div>
+        )}
         {error && <p role="alert">Could not load courses. Please refresh and try again.</p>}
 
         {!isPending && !error && (
