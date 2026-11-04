@@ -1854,3 +1854,274 @@ html { scroll-behavior: smooth; }
   flex-direction: column;
   gap: var(--space-4);
 }
+/* CTA button: GSAP ke saath transform transition na takraye */
+.landing-cta-band .btn {
+  transition: box-shadow 180ms ease, background 180ms ease !important;
+}
+
+/* ── CTA band: koi animation nahi, seedha apni jagah ── */
+.landing-cta-band .container,
+.landing-cta-band .container > * {
+  transform: none !important;
+  opacity: 1 !important;
+  transition: box-shadow 180ms ease, background 180ms ease !important;
+}
+
+/* ═══════════ FOOTER ═══════════ */
+.landing-footer {
+  background: #3b0d0d;
+  border-top: 3px solid #c9a227;
+  padding: var(--space-8) 0;
+}
+.landing-footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+.landing-footer-brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+.landing-footer-brand span { color: #e8c55a; }
+.landing-footer-copy {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* ── CTA BAND: tight spacing ── */
+.landing-cta-band {
+  margin-top: var(--space-12);
+  padding: var(--space-12) 0;
+}
+.landing-cta-band .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.landing-cta-band h2,
+.landing-cta-band p {
+  margin: 0 !important;
+}
+.landing-cta-band .btn {
+  margin-top: var(--space-3);
+}
+
+/* ── FOOTER: thoda compact ── */
+.landing-footer {
+  padding: var(--space-6) 0;
+}
+.landing-footer-inner {
+  gap: 4px;
+}
+/* ── CTA BAND: spacing + credits andar ── */
+.landing-cta-band {
+  margin-top: var(--space-12);
+  padding: var(--space-12) 0 var(--space-8);
+}
+.landing-cta-band .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+.landing-cta-band h2,
+.landing-cta-band p {
+  margin: 0 !important;
+}
+.landing-cta-band .btn {
+  margin-top: var(--space-3);
+}
+
+.cta-credit {
+  width: min(100%, 560px);
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid rgba(232, 197, 90, 0.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.cta-credit-brand {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fff;
+}
+.cta-credit-brand b { color: #e8c55a; }
+.cta-credit-names {
+  font-size: var(--text-sm);
+  color: rgba(255, 255, 255, 0.85);
+}
+.cta-credit-uni {
+  font-size: var(--text-xs);
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* ═══════════ DASHBOARD: CLASSY LAYER ═══════════ */
+
+/* ---------- Welcome card: gold sheen + avatar pulse ---------- */
+.dashboard-welcome {
+  position: relative;
+  overflow: hidden;
+}
+.dashboard-welcome::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -60%;
+  width: 35%;
+  background: linear-gradient(100deg, transparent, rgba(232, 197, 90, 0.25), transparent);
+  transform: skewX(-18deg);
+  animation: welcomeSheen 7s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes welcomeSheen {
+  0%, 55% { left: -60%; }
+  100%    { left: 130%; }
+}
+
+.dashboard-welcome .avatar-placeholder {
+  animation: avatarPulse 3.2s ease-in-out infinite;
+}
+@keyframes avatarPulse {
+  0%, 100% {
+    box-shadow:
+      4px 5px 12px rgba(94, 20, 20, 0.35),
+      inset 2px 2px 5px rgba(255, 255, 255, 0.35),
+      inset -3px -3px 6px rgba(59, 13, 13, 0.4),
+      0 0 0 0 rgba(201, 162, 39, 0.45);
+  }
+  50% {
+    box-shadow:
+      4px 5px 12px rgba(94, 20, 20, 0.35),
+      inset 2px 2px 5px rgba(255, 255, 255, 0.35),
+      inset -3px -3px 6px rgba(59, 13, 13, 0.4),
+      0 0 0 10px rgba(201, 162, 39, 0);
+  }
+}
+
+/* ---------- Quick action cards ---------- */
+.quick-action-card {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shine jo hover pe card ke upar se guzarti hai */
+.quick-action-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -70%;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: skewX(-18deg);
+  transition: left 700ms ease;
+  pointer-events: none;
+}
+.quick-action-card:hover::before { left: 130%; }
+
+/* Neeche gold line slide-in */
+.quick-action-card::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  bottom: 12px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c9a227, #e8c55a);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.quick-action-card:hover::after { transform: scaleX(1); }
+
+/* Icons: idle float (translate) + hover pop (transform) */
+.quick-action-icon {
+  display: inline-block;
+  animation: iconBob 3.4s ease-in-out infinite;
+  transition: transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.quick-action-card:nth-child(2) .quick-action-icon { animation-delay: -0.8s; }
+.quick-action-card:nth-child(3) .quick-action-icon { animation-delay: -1.6s; }
+.quick-action-card:nth-child(4) .quick-action-icon { animation-delay: -2.4s; }
+.quick-action-card:hover .quick-action-icon {
+  transform: rotate(-10deg) scale(1.2);
+}
+@keyframes iconBob {
+  0%, 100% { translate: 0 0; }
+  50%      { translate: 0 -5px; }
+}
+
+/* ---------- Section headings: gold line draw ---------- */
+.section-header-row {
+  position: relative;
+  border-bottom-color: rgba(201, 162, 39, 0.25);
+}
+.section-header-row::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, #c9a227, #e8c55a 60%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: lineDraw 900ms 350ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes lineDraw {
+  to { transform: scaleX(1); }
+}
+
+/* ---------- Cards: gold accent bar on hover ---------- */
+.senior-card,
+.interaction-preview,
+.suggested-course-card {
+  position: relative;
+}
+.senior-card::before,
+.interaction-preview::before,
+.suggested-course-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(180deg, #e8c55a, #c9a227);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 350ms ease;
+  pointer-events: none;
+}
+.senior-card:hover::before,
+.interaction-preview:hover::before,
+.suggested-course-card:hover::before {
+  transform: scaleY(1);
+}
+
+/* ---------- Pending badge: soft pulse dot ---------- */
+.status-badge.pending::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: #c9a227;
+  animation: dotPulse 1.8s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.7); }
+}

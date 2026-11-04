@@ -172,15 +172,25 @@ export default function LandingPage() {
       {/* ── CTA BAND ── */}
       <section className="landing-cta-band">
         <div className="container" style={{ textAlign: 'center' }}>
-          <h2 className="font-display" style={{ fontSize: 'var(--text-3xl)', marginBottom: 'var(--space-4)' }}>
+          <h2 className="font-display" style={{ fontSize: 'var(--text-3xl)' }}>
             Ready to find your mentor senior?
           </h2>
-          <p className="text-secondary" style={{ marginBottom: 'var(--space-6)' }}>
+          <p className="text-secondary">
             Join hundreds of Thapar students already getting structured guidance.
           </p>
           <Link to="/login" className="btn btn-primary btn-lg">
             Get Started Now
           </Link>
+
+          <div className="cta-credit">
+            <span className="cta-credit-brand font-display">⚡ Thapar <b>Cue</b></span>
+            <span className="cta-credit-names">
+              Built with ♥ by Roopanshi Marwaha, Tripti Bansal &amp; Ishita Rajput
+            </span>
+            <span className="cta-credit-uni">
+              Thapar Institute of Engineering &amp; Technology
+            </span>
+          </div>
         </div>
       </section>
     </div>
