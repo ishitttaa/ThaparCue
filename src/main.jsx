@@ -10,6 +10,7 @@ import './theme.css' //new columns override purane columns
 import './morphism.css'
 import App from './App.jsx'
 import BackgroundFX from './components/layout/BackgroundFX'
+import ThemeToggle from './components/ThemeToggle'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -17,6 +18,7 @@ createRoot(document.getElementById('root')).render(
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <BackgroundFX />
+          <ThemeToggle />
           <App />
           <Toaster position="top-right" />
         </AuthProvider>
