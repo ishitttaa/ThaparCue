@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useMyProfile } from '../../hooks/useMyProfile';
@@ -28,6 +28,37 @@ function previewOf(rawMessage = '') {
   return rawMessage.trim().slice(0, 60) || 'Skill-sharing request';
 }
 
+// Time ke hisaab se greeting
+function greetingNow() {
+  const h = new Date().getHours();
+  if (h < 12) return 'Good morning';
+  if (h < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+// Number 0 se target tak ginti mein chadhta hai (koi library nahi)
+function CountUp({ to = 0, duration = 900 }) {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setN(to);
+      return undefined;
+    }
+    let raf;
+    const start = performance.now();
+    const tick = (now) => {
+      const p = Math.min((now - start) / duration, 1);
+      setN(Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [to, duration]);
+
+  return <>{n}</>;
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const { data: profile } = useMyProfile();
@@ -45,7 +76,7 @@ export default function DashboardPage() {
   // Recent interactions: latest 3 requests (list pehle se newest-first hai)
   const recent = requests.slice(0, 3);
 
-    const recommended = useMemo(() => {
+  const recommended = useMemo(() => {
     const busyIds = new Set(
       requests
         .filter((r) => ['pending', 'accepted'].includes(r.status))
@@ -91,7 +122,7 @@ export default function DashboardPage() {
             </div>
             <div>
               <h1 className="font-display" style={{ fontSize: 'var(--text-2xl)' }}>
-                Welcome back, {displayName.split(' ')[0]}! 👋
+                {greetingNow()}, {displayName.split(' ')[0]}! 👋
               </h1>
               {profile && (
                 <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginTop: 4 }}>
@@ -102,15 +133,19 @@ export default function DashboardPage() {
           </div>
           <div className="dashboard-welcome-stats">
             <div className="stat-block">
-              <span className="stat-value">{requests.length}</span>
+              <span className="stat-value"><CountUp to={requests.length} /></span>
               <span className="stat-label">Requests</span>
             </div>
             <div className="stat-block">
-              <span className="stat-value" style={{ color: 'var(--warning)' }}>{pendingCount}</span>
+              <span className="stat-value" style={{ color: 'var(--warning)' }}>
+                <CountUp to={pendingCount} />
+              </span>
               <span className="stat-label">Pending</span>
             </div>
             <div className="stat-block">
-              <span className="stat-value" style={{ color: 'var(--success)' }}>{acceptedCount}</span>
+              <span className="stat-value" style={{ color: 'var(--success)' }}>
+                <CountUp to={acceptedCount} />
+              </span>
               <span className="stat-label">Chats</span>
             </div>
           </div>
@@ -228,7 +263,7 @@ export default function DashboardPage() {
               )}
             </div>
 
-            {}
+            {/* Suggested courses */}
             <div className="anim-fade-up" style={{ animationDelay: '0.4s', marginTop: 'var(--space-8)' }}>
               <div className="section-header-row">
                 <h2 className="font-display" style={{ fontSize: 'var(--text-xl)' }}>Explore Courses</h2>
