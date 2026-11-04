@@ -59,11 +59,50 @@ function CountUp({ to = 0, duration = 900 }) {
   return <>{n}</>;
 }
 
+// ── Skeleton helpers (shimmer) ──
+function Sk({ w = '100%', h = 14, r = 10 }) {
+  return <div className="skeleton" style={{ width: w, height: h, borderRadius: r }} />;
+}
+
+function SkSeniorCard() {
+  return (
+    <div className="glass-card skeleton-card">
+      <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+        <Sk w={56} h={56} r={999} />
+        <div style={{ flex: 1, display: 'grid', gap: 8 }}>
+          <Sk w="55%" h={16} />
+          <Sk w="75%" h={12} />
+        </div>
+      </div>
+      <Sk h={12} />
+      <div style={{ display: 'flex', gap: 8 }}>
+        <Sk w={90} h={34} r={999} />
+        <Sk w={90} h={34} r={999} />
+      </div>
+    </div>
+  );
+}
+
+function SkRow() {
+  return (
+    <div className="glass-card skeleton-card" style={{ padding: 'var(--space-4)' }}>
+      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <Sk w={36} h={36} r={999} />
+        <div style={{ flex: 1, display: 'grid', gap: 6 }}>
+          <Sk w="45%" h={13} />
+          <Sk w="70%" h={11} />
+        </div>
+        <Sk w={64} h={24} r={999} />
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const { data: profile } = useMyProfile();
-  const { data: requests = [] } = useRequests();
-  const { data: students = [] } = useStudents();
+  const { data: requests = [], isLoading: loadingRequests } = useRequests();
+  const { data: students = [], isLoading: loadingStudents } = useStudents();
   const { viewer, targetCourseIds } = useMatchContext();
   const [requestTarget, setRequestTarget] = useState(null);
 
@@ -86,7 +125,7 @@ export default function DashboardPage() {
     return rankStudents(candidates, viewer, targetCourseIds).slice(0, 3);
   }, [students, requests, viewer, targetCourseIds, user?.id]);
 
-  const { data: allCourses = [] } = useCourses();
+  const { data: allCourses = [], isLoading: loadingCourses } = useCourses();
   const { data: myCourseIds = [] } = useMyCourseIds();
   const suggestedCourses = useMemo(
     () =>
@@ -124,27 +163,33 @@ export default function DashboardPage() {
               <h1 className="font-display" style={{ fontSize: 'var(--text-2xl)' }}>
                 {greetingNow()}, {displayName.split(' ')[0]}! 👋
               </h1>
-              {profile && (
+              {profile ? (
                 <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginTop: 4 }}>
                   {profile.branch} · Year {profile.year}
                 </p>
+              ) : (
+                <div style={{ marginTop: 8 }}>
+                  <Sk w={180} h={12} />
+                </div>
               )}
             </div>
           </div>
           <div className="dashboard-welcome-stats">
             <div className="stat-block">
-              <span className="stat-value"><CountUp to={requests.length} /></span>
+              <span className="stat-value">
+                {loadingRequests ? '–' : <CountUp to={requests.length} />}
+              </span>
               <span className="stat-label">Requests</span>
             </div>
             <div className="stat-block">
               <span className="stat-value" style={{ color: 'var(--warning)' }}>
-                <CountUp to={pendingCount} />
+                {loadingRequests ? '–' : <CountUp to={pendingCount} />}
               </span>
               <span className="stat-label">Pending</span>
             </div>
             <div className="stat-block">
               <span className="stat-value" style={{ color: 'var(--success)' }}>
-                <CountUp to={acceptedCount} />
+                {loadingRequests ? '–' : <CountUp to={acceptedCount} />}
               </span>
               <span className="stat-label">Chats</span>
             </div>
@@ -178,7 +223,12 @@ export default function DashboardPage() {
               <h2 className="font-display" style={{ fontSize: 'var(--text-xl)' }}>Recommended for You</h2>
               <Link to="/explore" className="text-accent" style={{ fontSize: 'var(--text-sm)' }}>View all →</Link>
             </div>
-            {recommended.length === 0 ? (
+            {loadingStudents ? (
+              <div className="flex-col gap-4" style={{ display: 'flex' }}>
+                <SkSeniorCard />
+                <SkSeniorCard />
+              </div>
+            ) : recommended.length === 0 ? (
               <div className="glass-card empty-state" style={{ padding: 'var(--space-8)' }}>
                 <p className="empty-state-title">No suggestions right now</p>
                 <p className="empty-state-desc">More students will appear as they join.</p>
@@ -200,7 +250,12 @@ export default function DashboardPage() {
                 <h2 className="font-display" style={{ fontSize: 'var(--text-xl)' }}>Recent Interactions</h2>
                 <Link to="/inbox" className="text-accent" style={{ fontSize: 'var(--text-sm)' }}>View all →</Link>
               </div>
-              {recent.length === 0 ? (
+              {loadingRequests ? (
+                <div className="flex-col gap-3" style={{ display: 'flex' }}>
+                  <SkRow />
+                  <SkRow />
+                </div>
+              ) : recent.length === 0 ? (
                 <div className="glass-card empty-state" style={{ padding: 'var(--space-8)' }}>
                   <div className="empty-state-icon">💬</div>
                   <p className="empty-state-title">No interactions yet</p>
@@ -270,18 +325,25 @@ export default function DashboardPage() {
                 <Link to="/courses" className="text-accent" style={{ fontSize: 'var(--text-sm)' }}>All →</Link>
               </div>
               <div className="flex-col gap-3" style={{ display: 'flex' }}>
-                {suggestedCourses.map((c) => (
-                  <Link key={c.id} to={`/course/${c.code}`} className="suggested-course-card glass-card">
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
-                        <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
-                          {c.code} · Year {c.year}
-                        </p>
+                {loadingCourses ? (
+                  <>
+                    <SkRow />
+                    <SkRow />
+                  </>
+                ) : (
+                  suggestedCourses.map((c) => (
+                    <Link key={c.id} to={`/course/${c.code}`} className="suggested-course-card glass-card">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>{c.name}</p>
+                          <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
+                            {c.code} · Year {c.year}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  ))
+                )}
               </div>
             </div>
           </div>
