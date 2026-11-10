@@ -12,6 +12,7 @@ import App from './App.jsx'
 import BackgroundFX from './components/layout/BackgroundFX'
 import ThemeToggle from './components/ThemeToggle'
 import ErrorBoundary from './components/ErrorBoundary'
+import PageLoader from './components/PageLoader'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -19,6 +20,7 @@ createRoot(document.getElementById('root')).render(
       <BrowserRouter>
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
+            <PageLoader />
             <BackgroundFX />
             <ThemeToggle />
             <App />

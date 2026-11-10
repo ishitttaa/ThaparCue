@@ -1,0 +1,130 @@
+/* ═══════════ LANDING HERO: LIVE CHAT DEMO ═══════════ */
+@keyframes hcPop {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes hcBounce {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+  30%           { transform: translateY(-5px); opacity: 1; }
+}
+@keyframes hcBlink { 50% { opacity: 0; } }
+@keyframes hcPulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+  50%      { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0.05); }
+}
+
+.hc-card { display: flex; flex-direction: column; }
+
+.hc-who { min-width: 0; }
+.hc-name {
+  font-weight: 700;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hc-verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #c9a227;
+  color: #3b0d0d;
+  font-size: 0.6rem;
+}
+.hc-sub {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.hc-online {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: hcPulse 2s ease-in-out infinite;
+}
+
+/* Messages: fixed height taaki card kood-kood ke resize na ho */
+.hc-msgs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  min-height: 290px;
+}
+.hc-msgs .hero-msg { animation: hcPop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hc-msgs .hero-msg-you { align-self: flex-end; }
+
+.hc-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  width: fit-content;
+  padding: 14px 16px;
+}
+.hc-typing span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: hcBounce 1s ease-in-out infinite;
+}
+.hc-typing span:nth-child(2) { animation-delay: 0.15s; }
+.hc-typing span:nth-child(3) { animation-delay: 0.3s; }
+
+/* Fake input bar jisme "you" ka message type hota hai */
+.hc-input {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: var(--space-4);
+  padding: 7px 7px 7px 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--bg-elevated);
+}
+.hc-draft {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hc-placeholder { color: var(--text-muted); }
+.hc-caret::after {
+  content: '';
+  display: inline-block;
+  width: 1.5px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--accent);
+  animation: hcBlink 1s steps(1) infinite;
+}
+.hc-send {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #3b0d0d;
+  background: linear-gradient(160deg, #f0d172, #c9a227 55%, #a8861a);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.55),
+    inset 0 -3px 5px rgba(120, 90, 0, 0.35),
+    0 6px 12px -6px rgba(0, 0, 0, 0.5);
+}
+
+@media (max-width: 480px) {
+  .hc-msgs { min-height: 320px; }
+}
