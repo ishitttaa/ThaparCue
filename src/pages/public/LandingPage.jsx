@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import useLandingAnimations from '../../hooks/useLandingAnimations';
 import useSpotlight from '../../hooks/useSpotlight';
+import HeroChatDemo from '../../components/HeroChatDemo';
 
 const FEATURES = [
   {
@@ -89,24 +90,7 @@ export default function LandingPage() {
 
         {/* Hero visual */}
         <div className="landing-hero-visual">
-          <div className="hero-card glass-card spot">
-            <div className="hero-card-row">
-              <div className="avatar-placeholder avatar-md" style={{ background: 'linear-gradient(135deg, hsl(230,70%,55%), hsl(270,70%,45%))', fontSize: '0.85rem' }}>RM</div>
-              <div>
-                <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Roopanshi Marwaha · COE 3rd Year</p>
-                <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>System Design · OS · DSA</p>
-              </div>
-              <span className="badge badge-success" style={{ marginLeft: 'auto' }}>94 score</span>
-            </div>
-            <div className="hero-card-msg">
-              <div className="hero-msg hero-msg-them">
-                "For OS MST, deadlock and scheduling algorithms carry 40% weight. Don't skip the numerical problems."
-              </div>
-              <div className="hero-msg hero-msg-you">
-                Got it! Which scheduling algo appears most often?
-              </div>
-            </div>
-          </div>
+          <HeroChatDemo />
         </div>
       </section>
 
