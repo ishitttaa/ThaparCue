@@ -2,7 +2,7 @@
 
 ### Find someone who has already been where you are.
 
-ThaparCue is a campus knowledge-sharing and peer-guidance platform built exclusively for Thapar students. It connects students with relevant peers and seniors based on courses, skills, academic experience, and a transparent weighted matching algorithm.
+ThaparCue is a campus knowledge sharing and peer guidance platform built exclusively for Thapar students. It connects students with relevant peers and seniors based on courses, skills, academic experience, and a transparent weighted matching algorithm.
 
 Students can discover mentors, request guidance, chat in real time, and share their experiences — all in one place.
 
@@ -17,7 +17,7 @@ Students can discover mentors, request guidance, chat in real time, and share th
 - **Topic-Locked Requests:** Send structured guidance requests linked to specific topics and courses.
 - **Real-Time Chat:** Communicate with seniors once requests are accepted.
 - **Ratings & Reputation:** Build trust through conversation ratings and reliability metrics.
-- **Safety & Moderation:** Database-level reporting, suspension, and moderator authorization.
+- **Safety & Moderation:** Database level reporting, suspension, and moderator authorization.
 
 ## 🛠️ Tech Stack
 
@@ -25,14 +25,14 @@ Students can discover mentors, request guidance, chat in real time, and share th
 |---|---|
 | React + Vite | Frontend |
 | React Router DOM | Routing |
-| TanStack Query v5 | Server-state management |
+| TanStack Query v5 | Server state management |
 | Supabase Auth | Authentication |
 | PostgreSQL | Database |
 | Supabase RLS | Database security |
 | Supabase Realtime | Live messaging |
 | JavaScript + CSS | Application logic and styling |
 
-**Architecture:** Supabase serves as the backend, providing authentication, database operations, security, and real-time functionality. No separate backend server is used.
+**Architecture:** Supabase serves as the backend, providing authentication, database operations, security, and real time functionality. No separate backend server is used.
 
 ## 🧠 Match Score
 
@@ -89,7 +89,7 @@ npm.cmd run build
 ## 🔒 Security
 
 - Row Level Security (RLS) enabled across database tables.
-- College email restrictions enforced server-side.
+- College email restrictions enforced server side.
 - Secure SQL functions for sensitive operations.
 - Participant-only access to accepted conversations.
 - Database-enforced suspension and moderation policies.
