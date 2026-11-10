@@ -11,18 +11,21 @@ import './morphism.css'
 import App from './App.jsx'
 import BackgroundFX from './components/layout/BackgroundFX'
 import ThemeToggle from './components/ThemeToggle'
+import ErrorBoundary from './components/ErrorBoundary'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <BackgroundFX />
-          <ThemeToggle />
-          <App />
-          <Toaster position="top-right" />
-        </AuthProvider>
-      </QueryClientProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <BackgroundFX />
+            <ThemeToggle />
+            <App />
+            <Toaster position="top-right" />
+          </AuthProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 )

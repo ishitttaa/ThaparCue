@@ -17,6 +17,8 @@ import InboxPage from '../pages/app/InboxPage';
 import ChatPage from '../pages/app/ChatPage';
 import ProfilePage from '../pages/app/ProfilePage';
 import ModerationPage from '../pages/app/ModerationPage';
+import GroupsPage from '../pages/app/GroupsPage';
+import GroupDetailPage from '../pages/app/GroupDetailPage';
 
 export default function AppRoutes() {
   return (
@@ -47,6 +49,9 @@ export default function AppRoutes() {
           <Route path="/inbox" element={<InboxPage />} />
           <Route path="/inbox/:id" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+
+          <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/groups/:id" element={<GroupDetailPage />} />
 
           {/* Sirf moderators (database har call par dobara check karta hai) */}
           <Route element={<RequireModerator />}>

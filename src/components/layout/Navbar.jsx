@@ -24,6 +24,7 @@ export default function Navbar() {
     ? [
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/explore', label: 'Explore' },
+        { to: '/groups', label: 'Groups' },
         { to: '/courses', label: 'Courses' },
         { to: '/skills', label: 'Skills' },
         { to: '/inbox', label: 'Inbox', badge: true },
