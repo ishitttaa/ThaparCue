@@ -7,7 +7,9 @@ import {
   useSendMessage,
 } from '../../hooks/useChat';
 import RateHelper from '../../components/RateHelper';
+import ReportModal from '../../components/ReportModal';
 import { useMarkChatRead } from '../../hooks/useUnread';
+import { useMyPendingReport } from '../../hooks/useReports';
 
 function formatTime(iso) {
   const date = new Date(iso);
@@ -25,13 +27,15 @@ export default function ChatPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [reply, setReply] = useState('');
+  const [showReport, setShowReport] = useState(false);
   const bottomRef = useRef(null);
 
   const { data: request, isPending, error: requestError } = useChatRequest(id);
   const { data: messages = [] } = useChatMessages(id, !!request);
   const send = useSendMessage(id);
+  const { data: pendingReport } = useMyPendingReport(id);
   useMarkChatRead(id, messages.length, !!request);
-  
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length]);
@@ -109,6 +113,15 @@ export default function ChatPage() {
               View Profile
             </Link>
           )}
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => setShowReport(true)}
+            disabled={!!pendingReport}
+            title={pendingReport ? 'You already reported this chat' : 'Report this conversation'}
+          >
+            {pendingReport ? 'Reported' : 'Report'}
+          </button>
         </div>
 
         <div className="chat-messages anim-fade-up">
@@ -186,6 +199,14 @@ export default function ChatPage() {
           </button>
         </div>
       </div>
+
+      {showReport && (
+        <ReportModal
+          requestId={request.id}
+          otherName={other?.name}
+          onClose={() => setShowReport(false)}
+        />
+      )}
     </div>
   );
 }

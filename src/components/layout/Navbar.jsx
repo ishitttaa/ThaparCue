@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import InboxBadge from '../InboxBadge';
+import { useIsModerator } from '../../hooks/useReports';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: isMod } = useIsModerator();
 
   const handleLogout = async () => {
   try {
@@ -25,6 +27,7 @@ export default function Navbar() {
         { to: '/courses', label: 'Courses' },
         { to: '/skills', label: 'Skills' },
         { to: '/inbox', label: 'Inbox', badge: true },
+        ...(isMod ? [{ to: '/moderation', label: 'Moderation' }] : []),
       ]
     : [
         { to: '/courses', label: 'Courses' },

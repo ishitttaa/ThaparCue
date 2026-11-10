@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
+import { SkeletonGrid } from '../../components/Skeleton';
 import { useStudents } from '../../hooks/useProfiles';
 import { useMatchContext } from '../../hooks/useMatchContext';
 import { rankStudents } from '../../lib/matchScore';
@@ -67,7 +68,7 @@ export default function ExplorePage() {
         </select>
       </div>
 
-      {isPending && <p>Loading students...</p>}
+      {isPending && <SkeletonGrid count={6} />}
       {!isPending && error && (
         <p role="alert">Could not load students. Please refresh and try again.</p>
       )}
