@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { RequireAuth, RequireProfile, RequireNoProfile, PublicOnly } from './guards';
 // Step 1 ke hisaab se EK hi line rakho:
 import RequireModerator from './RequireModerator';
@@ -6,6 +6,7 @@ import RequireModerator from './RequireModerator';
 
 import LandingPage from '../pages/public/LandingPage';
 import LoginPage from '../pages/public/LoginPage';
+import NotFoundPage from '../pages/public/NotFoundPage'; // 👈 NAYA
 import OnboardingPage from '../pages/app/OnboardingPage';
 import DashboardPage from '../pages/app/DashboardPage';
 import ExplorePage from '../pages/app/ExplorePage';
@@ -17,6 +18,8 @@ import InboxPage from '../pages/app/InboxPage';
 import ChatPage from '../pages/app/ChatPage';
 import ProfilePage from '../pages/app/ProfilePage';
 import ModerationPage from '../pages/app/ModerationPage';
+import GroupsPage from '../pages/app/GroupsPage';
+import GroupDetailPage from '../pages/app/GroupDetailPage';
 
 export default function AppRoutes() {
   return (
@@ -48,6 +51,9 @@ export default function AppRoutes() {
           <Route path="/inbox/:id" element={<ChatPage />} />
           <Route path="/profile" element={<ProfilePage />} />
 
+          <Route path="/groups" element={<GroupsPage />} />
+          <Route path="/groups/:id" element={<GroupDetailPage />} />
+
           {/* Sirf moderators (database har call par dobara check karta hai) */}
           <Route element={<RequireModerator />}>
             <Route path="/moderation" element={<ModerationPage />} />
@@ -55,7 +61,8 @@ export default function AppRoutes() {
         </Route>
       </Route>
 
-      <Route path="*" element={<Navigate to="/" replace />} />
+      {/* 404: koi route match na ho to */}
+      <Route path="*" element={<NotFoundPage />} /> {/* 👈 BADLA (pehle Navigate to="/" tha) */}
     </Routes>
   );
 }

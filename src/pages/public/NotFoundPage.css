@@ -1,0 +1,62 @@
+.nf-wrap {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 40px 16px;
+}
+.nf-card {
+  text-align: center;
+  max-width: 520px;
+  animation: nfRise 600ms ease both;
+}
+.nf-code {
+  font-size: clamp(5rem, 18vw, 9rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -2px;
+  color: #7a1c1c;
+}
+.nf-zero {
+  display: inline-block;
+  margin: 0 4px;
+  color: #c9a227;
+  filter: drop-shadow(0 0 14px rgba(232, 197, 90, 0.6));
+  animation: nfFloat 3s ease-in-out infinite;
+}
+.nf-title {
+  margin: 12px 0 8px;
+  font-size: 1.8rem;
+  color: #7a1c1c;
+}
+.nf-text {
+  margin: 0 auto 24px;
+  opacity: 0.75;
+  line-height: 1.6;
+}
+.nf-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* dark mode: tumhari theme class/attribute ke hisaab se */
+[data-theme='dark'] .nf-code,
+[data-theme='dark'] .nf-title,
+.dark .nf-code,
+.dark .nf-title {
+  color: #e8c55a;
+}
+
+@keyframes nfRise {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes nfFloat {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50%      { transform: translateY(-10px) rotate(6deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-card, .nf-zero { animation: none; }
+}

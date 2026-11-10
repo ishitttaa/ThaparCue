@@ -1,29 +1,34 @@
 import { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import InboxBadge from '../InboxBadge';
 import { useIsModerator } from '../../hooks/useReports';
+import NotificationBell from '../NotificationBell';
+import { useInboxBadgeCount } from '../../hooks/useUnread';
+import { useInboxRealtime } from '../../hooks/useInboxRealtime';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const { data: isMod } = useIsModerator();
+  const { total: inboxCount } = useInboxBadgeCount();
+  useInboxRealtime(user?.id);
 
   const handleLogout = async () => {
-  try {
-    await logout();
-    navigate('/');
-    setMenuOpen(false);
-  } catch (error) {
-    console.error('Logout failed:', error.message);
-  }
-};
+    try {
+      await logout();
+      navigate('/');
+      setMenuOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+    }
+  };
 
   const navLinks = isAuthenticated
     ? [
         { to: '/dashboard', label: 'Dashboard' },
         { to: '/explore', label: 'Explore' },
+        { to: '/groups', label: 'Groups' },
         { to: '/courses', label: 'Courses' },
         { to: '/skills', label: 'Skills' },
         { to: '/inbox', label: 'Inbox', badge: true },
@@ -46,7 +51,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop nav links */}
+        {/* Desktop nav links (badge bell pe hai, yahan nahi) */}
         <div className="navbar-links hide-mobile">
           {navLinks.map((link) => (
             <NavLink
@@ -57,7 +62,6 @@ export default function Navbar() {
               }
             >
               {link.label}
-              {link.badge && <InboxBadge />}
             </NavLink>
           ))}
         </div>
@@ -66,6 +70,7 @@ export default function Navbar() {
         <div className="navbar-actions hide-mobile">
           {isAuthenticated ? (
             <div className="navbar-user">
+              <NotificationBell count={inboxCount || 0} />
               <Link to="/profile" className="navbar-avatar-btn">
                 <div
                   className="avatar-placeholder avatar-sm"
@@ -116,7 +121,26 @@ export default function Navbar() {
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
-              {link.badge && <InboxBadge />}
+              {link.badge && inboxCount > 0 && (
+                <span
+                  style={{
+                    display: 'inline-grid',
+                    placeItems: 'center',
+                    minWidth: 18,
+                    height: 18,
+                    padding: '0 5px',
+                    marginLeft: 6,
+                    borderRadius: 9,
+                    background: 'var(--danger, #dc2626)',
+                    color: '#fff',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                  }}
+                >
+                  {inboxCount > 9 ? '9+' : inboxCount}
+                </span>
+              )}
             </NavLink>
           ))}
           <div className="navbar-mobile-actions">

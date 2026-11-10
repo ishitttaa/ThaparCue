@@ -1,9 +1,5 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-
-// Dialog jo document.body mein render hota hai (portal), taaki kisi card ke
-// transform/animation ke andar fansa na rahe. Escape, bahar click, body scroll lock,
-// aur ek sticky footer (buttons hamesha dikhte hain).
 export default function ModalShell({ title, subtitle, onClose, footer, children }) {
   const panelRef = useRef(null);
   const closeRef = useRef(onClose);
@@ -32,7 +28,7 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
       style={{
         position: 'fixed',
         inset: 0,
-        zIndex: 2000,
+        zIndex: 9999,
         background: 'rgba(30, 12, 12, 0.55)',
         display: 'flex',
         alignItems: 'center',
@@ -50,6 +46,8 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
           width: '100%',
           maxWidth: 560,
           maxHeight: '90vh',
+          position: 'relative',
+          zIndex: 10000,
           display: 'flex',
           flexDirection: 'column',
           background: '#ffffff',
@@ -79,6 +77,7 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
               borderTop: '1px solid rgba(128, 128, 128, 0.2)',
               display: 'flex',
               gap: 'var(--space-2)',
+              flexShrink: 0,
               justifyContent: 'flex-end',
             }}
           >
