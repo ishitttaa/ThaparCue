@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import InboxBadge from '../InboxBadge';
 import { useIsModerator } from '../../hooks/useReports';
+import NotificationBell from '../NotificationBell';
 
 export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -11,14 +12,14 @@ export default function Navbar() {
   const { data: isMod } = useIsModerator();
 
   const handleLogout = async () => {
-  try {
-    await logout();
-    navigate('/');
-    setMenuOpen(false);
-  } catch (error) {
-    console.error('Logout failed:', error.message);
-  }
-};
+    try {
+      await logout();
+      navigate('/');
+      setMenuOpen(false);
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+    }
+  };
 
   const navLinks = isAuthenticated
     ? [
@@ -67,6 +68,7 @@ export default function Navbar() {
         <div className="navbar-actions hide-mobile">
           {isAuthenticated ? (
             <div className="navbar-user">
+              <NotificationBell count={3} /> {/* 👈 NAYI LINE */}
               <Link to="/profile" className="navbar-avatar-btn">
                 <div
                   className="avatar-placeholder avatar-sm"

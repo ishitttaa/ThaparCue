@@ -1,0 +1,50 @@
+.nbell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  color: inherit;
+  transition: background 200ms ease;
+}
+.nbell:hover { background: rgba(201, 162, 39, 0.18); }
+
+.nbell svg { transform-origin: 50% 10%; }
+.nbell-ring svg { animation: nbellRing 2.4s ease-in-out infinite; }
+
+.nbell-badge {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  line-height: 1;
+  color: #3b0d0d;
+  background: linear-gradient(135deg, #e8c55a, #c9a227);
+  box-shadow: 0 0 0 2px rgba(94, 20, 20, 0.9);
+  animation: nbellPop 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes nbellRing {
+  0%, 60%, 100% { transform: rotate(0); }
+  66% { transform: rotate(14deg); }
+  72% { transform: rotate(-12deg); }
+  78% { transform: rotate(9deg); }
+  84% { transform: rotate(-6deg); }
+  90% { transform: rotate(3deg); }
+}
+@keyframes nbellPop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nbell-ring svg, .nbell-badge { animation: none; }
+}
