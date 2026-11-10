@@ -3,9 +3,8 @@ import { supabase } from '../lib/supabase';
 // Database ke enum report_reason ke exact values
 export const REPORT_REASONS = [
   { value: 'spam', label: 'Spam' },
-  { value: 'harassment', label: 'Harassment' },
   { value: 'inappropriate', label: 'Inappropriate content' },
-  { value: 'other', label: 'Something else' },
+  { value: 'other', label: 'Other' },
 ];
 export const MAX_REPORT_DETAILS = 500;
 

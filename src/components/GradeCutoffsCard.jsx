@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ModalShell from './ModalShell';
 import {
   useDeleteCutoff,
   useGradeCutoffs,
@@ -53,97 +54,89 @@ function CutoffModal({ course, initial, onClose }) {
   };
 
   const error = localError || (save.error ? insightErrorMessage(save.error) : '');
+  const yearOptions = years.includes(Number(year)) ? years : [Number(year), ...years];
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => e.target === e.currentTarget && !save.isPending && onClose()}
+    <ModalShell
+      title={editing ? 'Edit your cutoffs' : 'Add grade cutoffs'}
+      subtitle={`${course.code} · ${course.name}`}
+      onClose={save.isPending ? () => {} : onClose}
+      footer={
+        <>
+          <button type="button" className="btn btn-ghost" onClick={onClose} disabled={save.isPending}>
+            Cancel
+          </button>
+          <button type="submit" form="cutoff-form" className="btn btn-primary" disabled={save.isPending}>
+            {save.isPending ? 'Saving...' : 'Save cutoffs'}
+          </button>
+        </>
+      }
     >
-      <div className="modal-box" style={{ maxHeight: '92vh', overflowY: 'auto' }}>
-        <form onSubmit={handleSubmit}>
-          <div className="modal-header" style={{ marginBottom: 'var(--space-4)' }}>
-            <h2 className="font-display" style={{ fontSize: 'var(--text-lg)', marginBottom: 2 }}>
-              {initial ? 'Edit your cutoffs' : 'Add grade cutoffs'}
-            </h2>
-            <p className="text-muted" style={{ fontSize: 'var(--text-sm)' }}>
-              {course.code} · {course.name}
-            </p>
+      <form id="cutoff-form" onSubmit={handleSubmit}>
+        <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
+          Enter the minimum marks (out of 100) needed for each grade in your batch. Leave a grade
+          empty if you do not know it. Only add numbers you are sure about.
+        </p>
+
+        <div className="form-group" style={{ marginBottom: 'var(--space-4)' }}>
+          <label className="form-label" htmlFor="cutoff-year">Batch (when you took it)</label>
+          <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0, 1fr)', gap: 'var(--space-2)' }}>
+            <select id="cutoff-year" className="form-select" value={year} onChange={(e) => setYear(e.target.value)} disabled={editing}>
+              {yearOptions.map((y) => (
+                <option key={y} value={y}>{y}</option>
+              ))}
+            </select>
+            <select className="form-select" value={semester} onChange={(e) => setSemester(e.target.value)} aria-label="Semester" disabled={editing}>
+              {SEMESTERS.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
           </div>
-
-          <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
-            Enter the minimum marks (out of 100) needed for each grade in your batch. You can
-            leave a grade empty if you do not know it. Only add numbers you are sure about.
-          </p>
-
-          {error && (
-            <div
-              role="alert"
-              style={{
-                background: 'var(--danger-dim)',
-                border: '1px solid rgba(239,68,68,0.25)',
-                borderRadius: 'var(--radius-md)',
-                padding: 'var(--space-3) var(--space-4)',
-                color: '#f87171',
-                fontSize: 'var(--text-sm)',
-                marginBottom: 'var(--space-4)',
-              }}
-            >
-              {error}
-            </div>
+          {editing && (
+            <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
+              To change the batch, delete this entry and add a new one.
+            </span>
           )}
+        </div>
 
-          <div className="form-group" style={{ marginBottom: 'var(--space-4)' }}>
-            <label className="form-label" htmlFor="cutoff-year">Batch (when you took it)</label>
-            <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0, 1fr)', gap: 'var(--space-2)' }}>
-              <select id="cutoff-year" className="form-select" value={year} onChange={(e) => setYear(e.target.value)} disabled={editing}>
-                {years.map((y) => (
-                  <option key={y} value={y}>{y}</option>
-                ))}
-              </select>
-              <select className="form-select" value={semester} onChange={(e) => setSemester(e.target.value)} aria-label="Semester" disabled={editing}>
-                {SEMESTERS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 'var(--space-3)' }}>
+          {GRADES.map((g) => (
+            <div key={g.key} className="form-group">
+              <label className="form-label" htmlFor={`cutoff-${g.key}`}>{g.label}</label>
+              <input
+                id={`cutoff-${g.key}`}
+                className="form-input"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                max="100"
+                step="0.5"
+                placeholder="–"
+                value={values[g.key]}
+                onChange={(e) => setValues((cur) => ({ ...cur, [g.key]: e.target.value }))}
+              />
             </div>
-            {editing && (
-              <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
-                To change the batch, delete this entry and add a new one.
-              </span>
-            )}
-          </div>
+          ))}
+        </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: 'var(--space-3)' }}>
-            {GRADES.map((g) => (
-              <div key={g.key} className="form-group">
-                <label className="form-label" htmlFor={`cutoff-${g.key}`}>{g.label}</label>
-                <input
-                  id={`cutoff-${g.key}`}
-                  className="form-input"
-                  type="number"
-                  inputMode="decimal"
-                  min="0"
-                  max="100"
-                  step="0.5"
-                  placeholder="–"
-                  value={values[g.key]}
-                  onChange={(e) => setValues((cur) => ({ ...cur, [g.key]: e.target.value }))}
-                />
-              </div>
-            ))}
+        {error && (
+          <div
+            role="alert"
+            style={{
+              background: 'var(--danger-dim)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-3) var(--space-4)',
+              color: '#f87171',
+              fontSize: 'var(--text-sm)',
+              marginTop: 'var(--space-4)',
+            }}
+          >
+            {error}
           </div>
-
-          <div className="flex gap-3" style={{ marginTop: 'var(--space-6)', justifyContent: 'flex-end' }}>
-            <button type="button" className="btn btn-ghost" onClick={onClose} disabled={save.isPending}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={save.isPending}>
-              {save.isPending ? 'Saving...' : 'Save cutoffs'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        )}
+      </form>
+    </ModalShell>
   );
 }
 

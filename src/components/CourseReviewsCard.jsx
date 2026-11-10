@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import ModalShell from './ModalShell';
 import {
   useDeleteReview,
   useMyReview,
@@ -23,18 +24,36 @@ const fmt = (v) => (v == null ? '–' : Number(v).toFixed(1));
 function ScalePicker({ label, value, onChange, names }) {
   return (
     <div className="form-group">
-      <label className="form-label">{label}</label>
-      <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+      <span className="form-label">{label}</span>
+      <div
+        role="group"
+        aria-label={label}
+        style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 'var(--space-2)' }}
+      >
         {names.map((name, i) => {
           const n = i + 1;
+          const on = value === n;
           return (
             <button
               key={n}
               type="button"
-              className={`btn btn-sm ${value === n ? 'btn-primary' : 'btn-ghost'}`}
+              aria-pressed={on}
+              aria-label={`${n} · ${name}`}
+              className={`btn btn-sm ${on ? 'btn-primary' : 'btn-secondary'}`}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 2,
+                height: 'auto',
+                padding: 'var(--space-2) 2px',
+                lineHeight: 1.15,
+              }}
               onClick={() => onChange(n)}
             >
-              {n} · {name}
+              <span style={{ fontSize: '1.05rem', fontWeight: 700 }}>{n}</span>
+              <span style={{ fontSize: '0.62rem', opacity: 0.85 }}>{name}</span>
             </button>
           );
         })}
@@ -83,101 +102,94 @@ function ReviewModal({ course, initial, onClose }) {
   };
 
   const error = localError || (save.error ? insightErrorMessage(save.error) : '');
+  const yearOptions = years.includes(Number(year)) ? years : [Number(year), ...years];
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={(e) => e.target === e.currentTarget && !save.isPending && onClose()}
+    <ModalShell
+      title={initial ? 'Edit your review' : 'Review this course'}
+      subtitle={`${course.code} · ${course.name}`}
+      onClose={save.isPending ? () => {} : onClose}
+      footer={
+        <>
+          <button type="button" className="btn btn-ghost" onClick={onClose} disabled={save.isPending}>
+            Cancel
+          </button>
+          <button type="submit" form="review-form" className="btn btn-primary" disabled={save.isPending}>
+            {save.isPending ? 'Saving...' : initial ? 'Save changes' : 'Submit review'}
+          </button>
+        </>
+      }
     >
-      <div className="modal-box" style={{ maxHeight: '92vh', overflowY: 'auto' }}>
-        <form onSubmit={handleSubmit}>
-          <div className="modal-header" style={{ marginBottom: 'var(--space-4)' }}>
-            <h2 className="font-display" style={{ fontSize: 'var(--text-lg)', marginBottom: 2 }}>
-              {initial ? 'Edit your review' : 'Review this course'}
-            </h2>
-            <p className="text-muted" style={{ fontSize: 'var(--text-sm)' }}>
-              {course.code} · {course.name}
-            </p>
-          </div>
+      <form id="review-form" onSubmit={handleSubmit}>
+        <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
+          Reviews are anonymous and only show up as averages once enough students have reviewed
+          the course.
+        </p>
 
-          <p className="text-secondary" style={{ fontSize: 'var(--text-sm)', marginBottom: 'var(--space-4)' }}>
-            Reviews are anonymous and only show up as averages once enough students have
-            reviewed the course.
-          </p>
+        <div className="flex-col gap-4" style={{ display: 'flex' }}>
+          <ScalePicker label="How difficult was it?" value={difficulty} onChange={setDifficulty} names={DIFFICULTY} />
+          <ScalePicker label="How heavy was the workload?" value={workload} onChange={setWorkload} names={WORKLOAD} />
 
-          {error && (
-            <div
-              role="alert"
-              style={{
-                background: 'var(--danger-dim)',
-                border: '1px solid rgba(239,68,68,0.25)',
-                borderRadius: 'var(--radius-md)',
-                padding: 'var(--space-3) var(--space-4)',
-                color: '#f87171',
-                fontSize: 'var(--text-sm)',
-                marginBottom: 'var(--space-4)',
-              }}
-            >
-              {error}
-            </div>
-          )}
-
-          <div className="flex-col gap-4" style={{ display: 'flex' }}>
-            <ScalePicker label="How difficult was it?" value={difficulty} onChange={setDifficulty} names={DIFFICULTY} />
-            <ScalePicker label="How heavy was the workload?" value={workload} onChange={setWorkload} names={WORKLOAD} />
-
-            <div className="form-group">
-              <label className="form-label">
-                Tags (up to {MAX_REVIEW_TAGS}) · {tags.length} selected
-              </label>
-              <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                {REVIEW_TAGS.map((t) => {
-                  const on = tags.includes(t.value);
-                  const locked = !on && tags.length >= MAX_REVIEW_TAGS;
-                  return (
-                    <button
-                      key={t.value}
-                      type="button"
-                      className={`tag ${on ? 'active' : ''}`}
-                      disabled={locked}
-                      style={{ cursor: locked ? 'not-allowed' : 'pointer', opacity: locked ? 0.5 : 1 }}
-                      onClick={() => toggleTag(t.value)}
-                    >
-                      {t.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label className="form-label" htmlFor="review-year">When did you take it?</label>
-              <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0, 1fr)', gap: 'var(--space-2)' }}>
-                <select id="review-year" className="form-select" value={year} onChange={(e) => setYear(e.target.value)}>
-                  {years.map((y) => (
-                    <option key={y} value={y}>{y}</option>
-                  ))}
-                </select>
-                <select className="form-select" value={semester} onChange={(e) => setSemester(e.target.value)} aria-label="Semester">
-                  {SEMESTERS.map((s) => (
-                    <option key={s.value} value={s.value}>{s.label}</option>
-                  ))}
-                </select>
-              </div>
+          <div className="form-group">
+            <span className="form-label">
+              Tags (up to {MAX_REVIEW_TAGS}) · {tags.length} selected
+            </span>
+            <div role="group" aria-label="Tags" style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+              {REVIEW_TAGS.map((t) => {
+                const on = tags.includes(t.value);
+                const locked = !on && tags.length >= MAX_REVIEW_TAGS;
+                return (
+                  <button
+                    key={t.value}
+                    type="button"
+                    aria-pressed={on}
+                    className={`tag ${on ? 'active' : ''}`}
+                    disabled={locked}
+                    style={{ cursor: locked ? 'not-allowed' : 'pointer', opacity: locked ? 0.5 : 1 }}
+                    onClick={() => toggleTag(t.value)}
+                  >
+                    {t.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="flex gap-3" style={{ marginTop: 'var(--space-6)', justifyContent: 'flex-end' }}>
-            <button type="button" className="btn btn-ghost" onClick={onClose} disabled={save.isPending}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={save.isPending}>
-              {save.isPending ? 'Saving...' : initial ? 'Save changes' : 'Submit review'}
-            </button>
+          <div className="form-group">
+            <label className="form-label" htmlFor="review-year">When did you take it?</label>
+            <div style={{ display: 'grid', gridTemplateColumns: '110px minmax(0, 1fr)', gap: 'var(--space-2)' }}>
+              <select id="review-year" className="form-select" value={year} onChange={(e) => setYear(e.target.value)}>
+                {yearOptions.map((y) => (
+                  <option key={y} value={y}>{y}</option>
+                ))}
+              </select>
+              <select className="form-select" value={semester} onChange={(e) => setSemester(e.target.value)} aria-label="Semester">
+                {SEMESTERS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            </div>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+
+        {error && (
+          <div
+            role="alert"
+            style={{
+              background: 'var(--danger-dim)',
+              border: '1px solid rgba(239,68,68,0.25)',
+              borderRadius: 'var(--radius-md)',
+              padding: 'var(--space-3) var(--space-4)',
+              color: '#f87171',
+              fontSize: 'var(--text-sm)',
+              marginTop: 'var(--space-4)',
+            }}
+          >
+            {error}
+          </div>
+        )}
+      </form>
+    </ModalShell>
   );
 }
 
@@ -241,10 +253,25 @@ export default function CourseReviewsCard({ course, taken }) {
           Could not load reviews: {error.message}
         </p>
       ) : total < min ? (
-        <p className="text-muted">
-          Not enough reviews yet ({total} of {min}). Averages appear once {min} students have
-          reviewed this course, so nobody can be identified.
-        </p>
+        <>
+          <p className="text-muted">
+            Not enough reviews yet ({total} of {min}). Averages appear once {min} students have
+            reviewed this course, so nobody can be identified.
+          </p>
+          <div
+            aria-hidden="true"
+            style={{ height: 6, borderRadius: 3, background: 'rgba(128,128,128,0.2)', marginTop: 'var(--space-2)' }}
+          >
+            <div
+              style={{
+                width: `${Math.min(100, (total / min) * 100)}%`,
+                height: '100%',
+                borderRadius: 3,
+                background: '#7b1d1d',
+              }}
+            />
+          </div>
+        </>
       ) : (
         <>
           <div style={{ display: 'flex', gap: 'var(--space-6)', flexWrap: 'wrap', marginBottom: 'var(--space-4)' }}>

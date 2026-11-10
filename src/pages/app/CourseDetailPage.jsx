@@ -14,6 +14,8 @@ import { TOPIC_OPTIONS } from '../../lib/topics';
 import CourseInfoCard from '../../components/CourseInfoCard';
 import SeniorCard from '../../components/SeniorCard';
 import RequestModal from '../../components/RequestModal';
+import CourseReviewsCard from '../../components/CourseReviewsCard';
+import GradeCutoffsCard from '../../components/GradeCutoffsCard';
 
 const TOP_N = 3;
 
@@ -123,6 +125,8 @@ export default function CourseDetailPage() {
           {/* Left: course info */}
           <div className="course-detail-main">
             <CourseInfoCard course={course} />
+            <CourseReviewsCard course={course} taken={taken} />
+            <GradeCutoffsCard course={course} taken={taken} />
           </div>
 
           {/* Right: top matches */}
