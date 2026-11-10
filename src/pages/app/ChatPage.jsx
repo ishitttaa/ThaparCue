@@ -28,7 +28,7 @@ export default function ChatPage() {
   const { user } = useAuth();
   const [reply, setReply] = useState('');
   const [showReport, setShowReport] = useState(false);
-  const bottomRef = useRef(null);
+  const listRef = useRef(null);
 
   const { data: request, isPending, error: requestError } = useChatRequest(id);
   const { data: messages = [] } = useChatMessages(id, !!request);
@@ -36,8 +36,10 @@ export default function ChatPage() {
   const { data: pendingReport } = useMyPendingReport(id);
   useMarkChatRead(id, messages.length, !!request);
 
+  // Naya message aane par sirf chat box ko neeche scroll karo (page nahi hilta)
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = listRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
   }, [messages.length]);
 
   const handleSend = () => {
@@ -124,7 +126,7 @@ export default function ChatPage() {
           </button>
         </div>
 
-        <div className="chat-messages anim-fade-up">
+        <div ref={listRef} data-lenis-prevent className="chat-messages anim-fade-up">
           <div className="chat-context-bar">
             <span className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
               Request context:
@@ -166,9 +168,8 @@ export default function ChatPage() {
               </div>
             );
           })}
-
-          <div ref={bottomRef} />
         </div>
+
         <RateHelper request={request} messages={messages} userId={user.id} />
         {send.error && (
           <p className="error-message" role="alert">
