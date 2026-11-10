@@ -1,9 +1,10 @@
 import { useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
+import BottomTabBar from './components/layout/BottomTabBar';
 import AppRoutes from './routes/AppRoutes';
 import './App.css';
 
-// In pages par Navbar nahi dikhana
+// Pages where the Navbar and bottom tab bar are hidden
 const NO_NAVBAR_PATHS = ['/login', '/onboarding'];
 
 export default function App() {
@@ -16,6 +17,7 @@ export default function App() {
       <main className="main-content">
         <AppRoutes />
       </main>
+      {!hideNavbar && <BottomTabBar />}
     </div>
   );
 }
