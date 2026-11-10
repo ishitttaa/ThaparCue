@@ -68,7 +68,16 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
           )}
         </div>
 
-        <div style={{ overflowY: 'auto', padding: '0 var(--space-5) var(--space-4)' }}>{children}</div>
+        <div
+          style={{
+            flex: '1 1 auto',
+            minHeight: 0,
+            overflowY: 'auto',
+            padding: '0 var(--space-5) var(--space-4)',
+          }}
+        >
+          {children}
+        </div>
 
         {footer && (
           <div
