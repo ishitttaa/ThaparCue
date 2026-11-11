@@ -17,7 +17,8 @@ Students can discover mentors, request guidance, chat in real time, and share th
 - **Topic-Locked Requests:** Send structured guidance requests linked to specific topics and courses.
 - **Real-Time Chat:** Communicate with seniors once requests are accepted.
 - **Ratings & Reputation:** Build trust through conversation ratings and reliability metrics.
-- **Safety & Moderation:** Database level reporting, suspension, and moderator authorization.
+- **Safety & Moderation:** Database-level reporting, suspension, and moderator authorization.
+- **Polished UI:** Thapar-inspired maroon and gold theme, smooth scrolling, scroll reveal animations, skeleton loaders, and toast notifications.
 
 ## 🛠️ Tech Stack
 
@@ -30,9 +31,12 @@ Students can discover mentors, request guidance, chat in real time, and share th
 | PostgreSQL | Database |
 | Supabase RLS | Database security |
 | Supabase Realtime | Live messaging |
+| GSAP | Scroll and interaction animations |
+| Lenis | Smooth scrolling |
+| Sonner | Toast notifications |
 | JavaScript + CSS | Application logic and styling |
 
-**Architecture:** Supabase serves as the backend, providing authentication, database operations, security, and real time functionality. No separate backend server is used.
+**Architecture:** Supabase serves as the backend, providing authentication, database operations, security, and real-time functionality. No separate backend server is used.
 
 ## 🧠 Match Score
 
@@ -61,38 +65,55 @@ cd ThaparCue
 
 2. Install dependencies:
 
-```powershell
-npm.cmd install
+```bash
+npm install
 ```
 
-3. Create `.env.local` in the root directory:
+3. Create a `.env.local` file in the root directory:
 
 ```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_publishable_key
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 ```
 
 4. Start the development server:
 
-```powershell
-npm.cmd run dev
+```bash
+npm run dev
 ```
 
 5. Build for production:
 
-```powershell
-npm.cmd run build
+```bash
+npm run build
 ```
 
-**Note:** Never expose or commit your Supabase service role key. Keep `.env.local` private.
+> **Windows PowerShell:** if you see a "scripts is disabled" error, use `npm.cmd` instead of `npm` (for example `npm.cmd install` and `npm.cmd run dev`).
+
+**Note:** Never expose or commit your Supabase service role key. Keep `.env.local` private; it is already listed in `.gitignore`.
+
+## 📁 Project Structure
+
+```text
+src/
+├── components/   Reusable UI (cards, modal, layout, auth shell)
+├── pages/        Public pages and logged-in app pages
+├── hooks/        Data and animation hooks
+├── services/     Supabase queries
+├── context/      Auth state
+├── routes/       Route definitions and guards
+├── lib/          Supabase client, match score, helpers
+├── theme.css     Maroon and gold theme
+└── morphism.css  Glass and clay effects, background
+```
 
 ## 🔒 Security
 
 - Row Level Security (RLS) enabled across database tables.
-- College email restrictions enforced server side.
+- College email restrictions enforced server-side.
 - Secure SQL functions for sensitive operations.
-- Participant-only access to accepted conversations.
-- Database-enforced suspension and moderation policies.
+- Participant only access to accepted conversations.
+- Database enforced suspension and moderation policies.
 
 ## 🗺️ Roadmap
 
