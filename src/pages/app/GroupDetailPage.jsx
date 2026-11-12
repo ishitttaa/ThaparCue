@@ -10,6 +10,7 @@ import {
   useLeaveGroup,
   useDeleteGroup,
   useInviteToGroup,
+  useGroupPendingInvites,
   useRemoveMemberFromGroup,
 } from '../../hooks/useGroups';
 import { useStudents } from '../../hooks/useProfiles';
@@ -59,6 +60,7 @@ export default function GroupDetailPage() {
   const removeMember = useRemoveMemberFromGroup();
 
   const { data: allStudents = [] } = useStudents();
+  const { data: pendingInvites = [] } = useGroupPendingInvites(id);
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -132,7 +134,11 @@ export default function GroupDetailPage() {
           toast.success(`Invite sent to ${student.name}`);
         },
         onError: (err) => {
-          toast.error(err.message || 'Could not send invite.');
+          if (err.code === '23505') {
+            toast.error('Ye student already invited hai');
+          } else {
+            toast.error(err.message || 'Invite nahi bheja ja saka');
+          }
         },
       }
     );
@@ -165,6 +171,12 @@ export default function GroupDetailPage() {
   const existingMemberIds = useMemo(() => {
     return new Set(groupMembers?.map((m) => m.user?.id || m.user_id) || []);
   }, [groupMembers]);
+
+  // Students jinhe is group ka pending invite already gaya hai
+  const invitedIds = useMemo(
+    () => new Set(pendingInvites.map((i) => i.invited_user)),
+    [pendingInvites]
+  );
 
   const availableStudents = useMemo(() => {
     return allStudents.filter((s) => {
@@ -537,50 +549,53 @@ export default function GroupDetailPage() {
                   </p>
                 </div>
               ) : (
-                availableStudents.map((student) => (
-                  <div
-                    key={student.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: 12,
-                      padding: '10px 14px',
-                      background: 'var(--bg-surface)',
-                      borderRadius: 'var(--radius-md)',
-                      border: '1px solid var(--border-subtle)',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                      <div
-                        className="avatar-placeholder"
-                        style={{ width: 34, height: 34, fontSize: '0.65rem', flexShrink: 0 }}
-                      >
-                        {getInitials(student.name)}
-                      </div>
-                      <div style={{ minWidth: 0 }}>
-                        <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                          {student.name}
-                        </p>
-                        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
-                          {[student.branch, student.year ? `Year ${student.year}` : null].filter(Boolean).join(' · ')}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button
-                      className="btn btn-primary btn-sm"
-                      onClick={() => handleAddStudent(student)}
-                      disabled={invite.isPending}
+                availableStudents.map((student) => {
+                  const alreadyInvited = invitedIds.has(student.id);
+                  return (
+                    <div
+                      key={student.id}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        gap: 12,
+                        padding: '10px 14px',
+                        background: 'var(--bg-surface)',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid var(--border-subtle)',
+                      }}
                     >
-                      {invite.isPending && invite.variables?.userId === student.id ? (
-                        <span className="spinner" />
-                      ) : (
-                        'Invite'
-                      )}
-                    </button>
-                  </div>
-                ))
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                        <div
+                          className="avatar-placeholder"
+                          style={{ width: 34, height: 34, fontSize: '0.65rem', flexShrink: 0 }}
+                        >
+                          {getInitials(student.name)}
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {student.name}
+                          </p>
+                          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
+                            {[student.branch, student.year ? `Year ${student.year}` : null].filter(Boolean).join(' · ')}
+                          </p>
+                        </div>
+                      </div>
+
+                      <button
+                        className="btn btn-primary btn-sm"
+                        onClick={() => handleAddStudent(student)}
+                        disabled={invite.isPending || alreadyInvited}
+                      >
+                        {alreadyInvited
+                          ? 'Invited'
+                          : invite.isPending && invite.variables?.userId === student.id
+                            ? <span className="spinner" />
+                            : 'Invite'}
+                      </button>
+                    </div>
+                  );
+                })
               )}
             </div>
 
@@ -591,8 +606,7 @@ export default function GroupDetailPage() {
             </div>
           </div>
         </div>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }

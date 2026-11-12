@@ -15,6 +15,7 @@ import {
   sendGroupMessage,
   inviteToGroup,
   getMyInvites,
+  getGroupPendingInvites,
   respondToInvite,
 } from '../services/groups';
 
@@ -152,11 +153,16 @@ export function useSendGroupMessage(groupId) {
   });
 }
 export function useInviteToGroup() {
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   return useMutation({
     mutationFn: ({ groupId, userId }) => inviteToGroup({ groupId, userId, invitedBy: user.id }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['group-pending-invites', variables.groupId] });
+    },
   });
 }
+
 
 export function useMyInvites() {
   const { user } = useAuth();
@@ -176,5 +182,12 @@ export function useRespondToInvite() {
       queryClient.invalidateQueries({ queryKey: ['groups'] });
       queryClient.invalidateQueries({ queryKey: ['group'] });
     },
+  });
+}
+export function useGroupPendingInvites(groupId) {
+  return useQuery({
+    queryKey: ['group-pending-invites', groupId],
+    queryFn: () => getGroupPendingInvites(groupId),
+    enabled: !!groupId,
   });
 }

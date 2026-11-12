@@ -162,3 +162,12 @@ export async function respondToInvite({ inviteId, accept }) {
   });
   if (error) throw error;
 }
+export async function getGroupPendingInvites(groupId) {
+  const { data, error } = await supabase
+    .from('group_invites')
+    .select('invited_user')
+    .eq('group_id', groupId)
+    .eq('status', 'pending');
+  if (error) throw error;
+  return data;
+}
