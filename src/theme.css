@@ -2412,3 +2412,35 @@ html, body, .glass-card, .navbar, .form-input {
 @keyframes plPop  { to { opacity: 1; transform: scale(1); } }
 @keyframes plRise { to { opacity: 1; transform: translateY(0); } }
 @keyframes plFill { to { transform: scaleX(1); } }
+
+/* ── MOBILE: CTA band neeche tak, tab bar ke liye jagah ── */
+@media (max-width: 900px) {
+  .landing-cta-band {
+    margin-bottom: 0;
+    padding-bottom: 96px; /* tab bar ke peeche text na chhupe */
+  }
+
+  /* Toggle tab bar ke upar, kone me */
+  .theme-toggle {
+    bottom: 76px;
+    right: 12px;
+  }
+}
+
+/* ── LANDING (bina login): tab bar hai hi nahi, extra jagah hatao ── */
+@media (max-width: 900px) {
+  body:has(.landing-page),
+  body:has(.landing-page) #root {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  body:has(.landing-page) .landing-cta-band {
+    padding-bottom: var(--space-8);
+  }
+
+  body:has(.landing-page) .theme-toggle {
+    bottom: 16px;
+    right: 12px;
+  }
+}
