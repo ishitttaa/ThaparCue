@@ -134,3 +134,31 @@ export async function sendGroupMessage({ groupId, senderId, content }) {
   if (error) throw error;
   return data;
 }
+export async function inviteToGroup({ groupId, userId, invitedBy }) {
+  const { data, error } = await supabase
+    .from('group_invites')
+    .insert({ group_id: groupId, invited_user: userId, invited_by: invitedBy })
+    .select('id')
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function getMyInvites(userId) {
+  const { data, error } = await supabase
+    .from('group_invites')
+    .select('id, group_id, status, created_at, group:groups!group_id(id, name, category), inviter:profiles!invited_by(name)')
+    .eq('invited_user', userId)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
+export async function respondToInvite({ inviteId, accept }) {
+  const { error } = await supabase.rpc('respond_group_invite', {
+    p_invite_id: inviteId,
+    p_accept: accept,
+  });
+  if (error) throw error;
+}

@@ -13,6 +13,9 @@ import {
   removeMemberFromGroup,
   getGroupMessages,
   sendGroupMessage,
+  inviteToGroup,
+  getMyInvites,
+  respondToInvite,
 } from '../services/groups';
 
 export function useGroups(category) {
@@ -145,6 +148,33 @@ export function useSendGroupMessage(groupId) {
       queryClient.setQueryData(['group-messages', groupId], (old = []) =>
         old.some((m) => m.id === message.id) ? old : [...old, message]
       );
+    },
+  });
+}
+export function useInviteToGroup() {
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ groupId, userId }) => inviteToGroup({ groupId, userId, invitedBy: user.id }),
+  });
+}
+
+export function useMyInvites() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['my-invites', user?.id],
+    queryFn: () => getMyInvites(user.id),
+    enabled: !!user?.id,
+  });
+}
+
+export function useRespondToInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ inviteId, accept }) => respondToInvite({ inviteId, accept }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-invites'] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['group'] });
     },
   });
 }

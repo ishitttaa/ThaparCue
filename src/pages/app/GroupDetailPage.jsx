@@ -9,7 +9,7 @@ import {
   useJoinGroup,
   useLeaveGroup,
   useDeleteGroup,
-  useAddMemberToGroup,
+  useInviteToGroup,
   useRemoveMemberFromGroup,
 } from '../../hooks/useGroups';
 import { useStudents } from '../../hooks/useProfiles';
@@ -55,7 +55,7 @@ export default function GroupDetailPage() {
   const joinGroup = useJoinGroup();
   const leaveGroup = useLeaveGroup();
   const deleteGroup = useDeleteGroup();
-  const addMember = useAddMemberToGroup();
+  const invite = useInviteToGroup();
   const removeMember = useRemoveMemberFromGroup();
 
   const { data: allStudents = [] } = useStudents();
@@ -125,14 +125,14 @@ export default function GroupDetailPage() {
       return;
     }
 
-    addMember.mutate(
-      { groupId: id, userId: student.id, role: 'member' },
+    invite.mutate(
+      { groupId: id, userId: student.id },
       {
         onSuccess: () => {
-          toast.success(`${student.name} added to the group!`);
+          toast.success(`Invite sent to ${student.name}`);
         },
         onError: (err) => {
-          toast.error(err.message || 'Failed to add student. Please ensure Supabase policies are updated.');
+          toast.error(err.message || 'Could not send invite.');
         },
       }
     );
@@ -571,12 +571,12 @@ export default function GroupDetailPage() {
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={() => handleAddStudent(student)}
-                      disabled={addMember.isPending}
+                      disabled={invite.isPending}
                     >
-                      {addMember.isPending && addMember.variables?.userId === student.id ? (
+                      {invite.isPending && invite.variables?.userId === student.id ? (
                         <span className="spinner" />
                       ) : (
-                        '+ Add'
+                        'Invite'
                       )}
                     </button>
                   </div>
@@ -591,7 +591,8 @@ export default function GroupDetailPage() {
             </div>
           </div>
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
