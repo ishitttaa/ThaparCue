@@ -539,64 +539,66 @@ export default function GroupDetailPage() {
             </div>
 
             {/* Student List */}
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, paddingRight: 4, minHeight: 200, maxHeight: 300 }}>
-              {availableStudents.length === 0 ? (
-                <div className="empty-state" style={{ padding: '24px 8px' }}>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
-                    {searchStudent.trim()
-                      ? 'No matching students found.'
-                      : 'All registered students are already in this group!'}
-                  </p>
-                </div>
-              ) : (
-                availableStudents.map((student) => {
-                  const alreadyInvited = invitedIds.has(student.id);
-                  return (
-                    <div
-                      key={student.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        gap: 12,
-                        padding: '10px 14px',
-                        background: 'var(--bg-surface)',
-                        borderRadius: 'var(--radius-md)',
-                        border: '1px solid var(--border-subtle)',
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                        <div
-                          className="avatar-placeholder"
-                          style={{ width: 34, height: 34, fontSize: '0.65rem', flexShrink: 0 }}
-                        >
-                          {getInitials(student.name)}
-                        </div>
-                        <div style={{ minWidth: 0 }}>
-                          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {student.name}
-                          </p>
-                          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
-                            {[student.branch, student.year ? `Year ${student.year}` : null].filter(Boolean).join(' · ')}
-                          </p>
-                        </div>
-                      </div>
-
-                      <button
-                        className="btn btn-primary btn-sm"
-                        onClick={() => handleAddStudent(student)}
-                        disabled={invite.isPending || alreadyInvited}
+            <div
+              data-lenis-prevent
+              style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, paddingRight: 4, minHeight: 200, maxHeight: 300 }}
+            >              {availableStudents.length === 0 ? (
+              <div className="empty-state" style={{ padding: '24px 8px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+                  {searchStudent.trim()
+                    ? 'No matching students found.'
+                    : 'All registered students are already in this group!'}
+                </p>
+              </div>
+            ) : (
+              availableStudents.map((student) => {
+                const alreadyInvited = invitedIds.has(student.id);
+                return (
+                  <div
+                    key={student.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      gap: 12,
+                      padding: '10px 14px',
+                      background: 'var(--bg-surface)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--border-subtle)',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                      <div
+                        className="avatar-placeholder"
+                        style={{ width: 34, height: 34, fontSize: '0.65rem', flexShrink: 0 }}
                       >
-                        {alreadyInvited
-                          ? 'Invited'
-                          : invite.isPending && invite.variables?.userId === student.id
-                            ? <span className="spinner" />
-                            : 'Invite'}
-                      </button>
+                        {getInitials(student.name)}
+                      </div>
+                      <div style={{ minWidth: 0 }}>
+                        <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {student.name}
+                        </p>
+                        <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-xs)', margin: 0 }}>
+                          {[student.branch, student.year ? `Year ${student.year}` : null].filter(Boolean).join(' · ')}
+                        </p>
+                      </div>
                     </div>
-                  );
-                })
-              )}
+
+                    <button
+                      className="btn btn-primary btn-sm"
+                      onClick={() => handleAddStudent(student)}
+                      disabled={invite.isPending || alreadyInvited}
+                    >
+                      {alreadyInvited
+                        ? 'Invited'
+                        : invite.isPending && invite.variables?.userId === student.id
+                          ? <span className="spinner" />
+                          : 'Invite'}
+                    </button>
+                  </div>
+                );
+              })
+            )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>
