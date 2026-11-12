@@ -13,6 +13,10 @@ import {
   removeMemberFromGroup,
   getGroupMessages,
   sendGroupMessage,
+  inviteToGroup,
+  getMyInvites,
+  getGroupPendingInvites,
+  respondToInvite,
 } from '../services/groups';
 
 export function useGroups(category) {
@@ -146,5 +150,44 @@ export function useSendGroupMessage(groupId) {
         old.some((m) => m.id === message.id) ? old : [...old, message]
       );
     },
+  });
+}
+export function useInviteToGroup() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+  return useMutation({
+    mutationFn: ({ groupId, userId }) => inviteToGroup({ groupId, userId, invitedBy: user.id }),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['group-pending-invites', variables.groupId] });
+    },
+  });
+}
+
+
+export function useMyInvites() {
+  const { user } = useAuth();
+  return useQuery({
+    queryKey: ['my-invites', user?.id],
+    queryFn: () => getMyInvites(user.id),
+    enabled: !!user?.id,
+  });
+}
+
+export function useRespondToInvite() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ inviteId, accept }) => respondToInvite({ inviteId, accept }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-invites'] });
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      queryClient.invalidateQueries({ queryKey: ['group'] });
+    },
+  });
+}
+export function useGroupPendingInvites(groupId) {
+  return useQuery({
+    queryKey: ['group-pending-invites', groupId],
+    queryFn: () => getGroupPendingInvites(groupId),
+    enabled: !!groupId,
   });
 }

@@ -9,7 +9,8 @@ import {
   useJoinGroup,
   useLeaveGroup,
   useDeleteGroup,
-  useAddMemberToGroup,
+  useInviteToGroup,
+  useGroupPendingInvites,
   useRemoveMemberFromGroup,
 } from '../../hooks/useGroups';
 import { useStudents } from '../../hooks/useProfiles';
@@ -55,10 +56,11 @@ export default function GroupDetailPage() {
   const joinGroup = useJoinGroup();
   const leaveGroup = useLeaveGroup();
   const deleteGroup = useDeleteGroup();
-  const addMember = useAddMemberToGroup();
+  const invite = useInviteToGroup();
   const removeMember = useRemoveMemberFromGroup();
 
   const { data: allStudents = [] } = useStudents();
+  const { data: pendingInvites = [] } = useGroupPendingInvites(id);
 
   // Scroll to bottom on new message
   useEffect(() => {
@@ -125,14 +127,18 @@ export default function GroupDetailPage() {
       return;
     }
 
-    addMember.mutate(
-      { groupId: id, userId: student.id, role: 'member' },
+    invite.mutate(
+      { groupId: id, userId: student.id },
       {
         onSuccess: () => {
-          toast.success(`${student.name} added to the group!`);
+          toast.success(`Invite sent to ${student.name}`);
         },
         onError: (err) => {
-          toast.error(err.message || 'Failed to add student. Please ensure Supabase policies are updated.');
+          if (err.code === '23505') {
+            toast.error('Ye student already invited hai');
+          } else {
+            toast.error(err.message || 'Invite nahi bheja ja saka');
+          }
         },
       }
     );
@@ -165,6 +171,12 @@ export default function GroupDetailPage() {
   const existingMemberIds = useMemo(() => {
     return new Set(groupMembers?.map((m) => m.user?.id || m.user_id) || []);
   }, [groupMembers]);
+
+  // Students jinhe is group ka pending invite already gaya hai
+  const invitedIds = useMemo(
+    () => new Set(pendingInvites.map((i) => i.invited_user)),
+    [pendingInvites]
+  );
 
   const availableStudents = useMemo(() => {
     return allStudents.filter((s) => {
@@ -527,17 +539,21 @@ export default function GroupDetailPage() {
             </div>
 
             {/* Student List */}
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, paddingRight: 4, minHeight: 200, maxHeight: 300 }}>
-              {availableStudents.length === 0 ? (
-                <div className="empty-state" style={{ padding: '24px 8px' }}>
-                  <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
-                    {searchStudent.trim()
-                      ? 'No matching students found.'
-                      : 'All registered students are already in this group!'}
-                  </p>
-                </div>
-              ) : (
-                availableStudents.map((student) => (
+            <div
+              data-lenis-prevent
+              style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, paddingRight: 4, minHeight: 200, maxHeight: 300 }}
+            >              {availableStudents.length === 0 ? (
+              <div className="empty-state" style={{ padding: '24px 8px' }}>
+                <p style={{ color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>
+                  {searchStudent.trim()
+                    ? 'No matching students found.'
+                    : 'All registered students are already in this group!'}
+                </p>
+              </div>
+            ) : (
+              availableStudents.map((student) => {
+                const alreadyInvited = invitedIds.has(student.id);
+                return (
                   <div
                     key={student.id}
                     style={{
@@ -571,17 +587,18 @@ export default function GroupDetailPage() {
                     <button
                       className="btn btn-primary btn-sm"
                       onClick={() => handleAddStudent(student)}
-                      disabled={addMember.isPending}
+                      disabled={invite.isPending || alreadyInvited}
                     >
-                      {addMember.isPending && addMember.variables?.userId === student.id ? (
-                        <span className="spinner" />
-                      ) : (
-                        '+ Add'
-                      )}
+                      {alreadyInvited
+                        ? 'Invited'
+                        : invite.isPending && invite.variables?.userId === student.id
+                          ? <span className="spinner" />
+                          : 'Invite'}
                     </button>
                   </div>
-                ))
-              )}
+                );
+              })
+            )}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--border-subtle)' }}>

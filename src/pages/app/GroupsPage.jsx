@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useGroups, useCreateGroup, useJoinGroup } from '../../hooks/useGroups';
+import GroupInvitesCard from '../../components/GroupInvitesCard';
 
 const CATEGORIES = ['all', 'hackathon', 'competition', 'event', 'general'];
 const CATEGORY_ICONS = { hackathon: '🚀', competition: '🏆', event: '📅', general: '💬', all: '🌐' };
@@ -61,6 +62,8 @@ export default function GroupsPage() {
             + Create Group
           </button>
         </div>
+
+        <GroupInvitesCard />
 
         {/* Category filters */}
         <div className="groups-filter-bar anim-fade-up" style={{ animationDelay: '0.1s' }}>

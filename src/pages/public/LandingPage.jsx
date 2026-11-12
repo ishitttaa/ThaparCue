@@ -70,11 +70,11 @@ export default function LandingPage() {
           </h1>
           <p className="landing-subtitle text-secondary">
             ThaparCue connects you with verified seniors who've taken your courses,
-            earned the grades, and landed the placements — so you get real guidance, not guesses.
+            earned the grades, and landed the placements. So, you get real guidance, not guesses.
           </p>
           <div className="landing-ctas">
             <Link to="/login" className="btn btn-primary btn-lg">
-              Get Started — It's Free
+              Get Started
             </Link>
             <button
               className="btn btn-secondary btn-lg"
@@ -84,7 +84,7 @@ export default function LandingPage() {
             </button>
           </div>
           <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-3)' }}>
-            Use your @thapar.edu email — or click demo to explore instantly
+            Use your @thapar.edu email or click demo to explore instantly
           </p>
         </div>
 

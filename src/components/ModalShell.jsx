@@ -1,6 +1,14 @@
+
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
-export default function ModalShell({ title, subtitle, onClose, footer, children }) {
+
+export default function ModalShell({
+  title,
+  subtitle,
+  onClose,
+  footer,
+  children,
+}) {
   const panelRef = useRef(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
@@ -8,11 +16,17 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
     panelRef.current?.focus();
+
     const onKey = (e) => {
-      if (e.key === 'Escape') closeRef.current();
+      if (e.key === 'Escape') {
+        closeRef.current?.();
+      }
     };
+
     document.addEventListener('keydown', onKey);
+
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKey);
@@ -23,7 +37,9 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
     <div
       role="presentation"
       onMouseDown={(e) => {
-        if (e.target === e.currentTarget) closeRef.current();
+        if (e.target === e.currentTarget) {
+          closeRef.current?.();
+        }
       }}
       style={{
         position: 'fixed',
@@ -57,19 +73,46 @@ export default function ModalShell({ title, subtitle, onClose, footer, children 
           outline: 'none',
         }}
       >
-        <div style={{ padding: 'var(--space-5) var(--space-5) var(--space-3)' }}>
-          <h2 className="font-display" style={{ fontSize: 'var(--text-xl)', marginBottom: 2 }}>
+        {/* Header */}
+        <div
+          style={{
+            padding: 'var(--space-5) var(--space-5) var(--space-3)',
+            flexShrink: 0,
+          }}
+        >
+          <h2
+            className="font-display"
+            style={{
+              fontSize: 'var(--text-xl)',
+              marginBottom: 2,
+            }}
+          >
             {title}
           </h2>
+
           {subtitle && (
-            <p className="text-muted" style={{ fontSize: 'var(--text-sm)' }}>
+            <p
+              className="text-muted"
+              style={{ fontSize: 'var(--text-sm)' }}
+            >
               {subtitle}
             </p>
           )}
         </div>
 
-        <div style={{ overflowY: 'auto', padding: '0 var(--space-5) var(--space-4)' }}>{children}</div>
+        {/* Scrollable content */}
+        <div
+          style={{
+            flex: '1 1 auto',
+            minHeight: 0,
+            overflowY: 'auto',
+            padding: '0 var(--space-5) var(--space-4)',
+          }}
+        >
+          {children}
+        </div>
 
+        {/* Footer */}
         {footer && (
           <div
             style={{
