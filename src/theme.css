@@ -2444,3 +2444,31 @@ html, body, .glass-card, .navbar, .form-input {
     right: 12px;
   }
 }
+
+/* ── LANDING: neeche ki extra jagah hatao ── */
+.landing-page {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+:has(> .landing-page) {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: 0 !important;
+}
+.landing-cta-band {
+  margin-bottom: 0 !important;
+}
+
+/* ── LANDING MOBILE: tab bar (login) ke liye jagah, band maroon hi rahe ── */
+@media (max-width: 900px) {
+  .landing-cta-band,
+  body:has(.landing-page) .landing-cta-band {
+    padding-bottom: 96px !important;
+  }
+
+  .theme-toggle,
+  body:has(.landing-page) .theme-toggle {
+    bottom: 76px !important;
+    right: 12px !important;
+  }
+}
