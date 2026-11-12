@@ -737,3 +737,52 @@
     flex-wrap: wrap;
   }
 }
+
+/* ═══════════ GROUPS + INBOX: maroon-gold theme ═══════════ */
+.groups-filter-btn {
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 3px 3px 8px rgba(122, 28, 28, 0.12), -2px -2px 6px rgba(255, 255, 255, 0.9);
+}
+.groups-filter-btn:hover {
+  background: var(--bg-elevated);
+  border-color: #c9a227;
+  color: var(--accent);
+}
+.groups-filter-btn.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  border-color: #7a1c1c;
+  color: #fff;
+  box-shadow: 4px 5px 12px rgba(94, 20, 20, 0.35), inset 2px 2px 6px rgba(255, 255, 255, 0.2);
+}
+
+.group-card {
+  border-top: 3px solid #c9a227;
+}
+.group-card:hover {
+  box-shadow: 0 14px 30px rgba(122, 28, 28, 0.18);
+}
+.group-card-name { color: var(--accent); }
+.group-detail-header { border-left: 5px solid #c9a227; }
+
+.inbox-page .tab-count {
+  background: rgba(122, 28, 28, 0.12);
+  color: var(--accent);
+}
+.inbox-page .inbox-tab.active {
+  background: #7a1c1c;
+  color: #fff;
+  border-color: #7a1c1c;
+}
+
+/* Dark mode me bhi sahi dikhe */
+:root[data-theme='dark'] .groups-filter-btn {
+  background: #2a1c19;
+  color: #f0a8a8;
+  box-shadow: 3px 4px 10px rgba(0, 0, 0, 0.45);
+}
+:root[data-theme='dark'] .group-card-name { color: #f0a8a8; }
+:root[data-theme='dark'] .inbox-page .tab-count {
+  background: rgba(240, 168, 168, 0.15);
+  color: #f0a8a8;
+}
