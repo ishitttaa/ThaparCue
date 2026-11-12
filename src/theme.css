@@ -2472,3 +2472,78 @@ html, body, .glass-card, .navbar, .form-input {
     right: 12px !important;
   }
 }
+
+/* ═══════════ MODERATION / REPORTS: tabs ═══════════ */
+.page-content .inbox-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid rgba(201, 162, 39, 0.35);
+}
+
+.page-content .inbox-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #ffffff, #f1e9e4);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow:
+    4px 5px 12px rgba(122, 28, 28, 0.14),
+    -3px -3px 9px rgba(255, 255, 255, 0.9),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.9);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.page-content .inbox-tab:hover { transform: translateY(-2px); }
+.page-content .inbox-tab:active { transform: scale(0.97); }
+
+.page-content .inbox-tab.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  color: #fff;
+  box-shadow:
+    5px 6px 14px rgba(94, 20, 20, 0.35),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.22),
+    inset -3px -3px 7px rgba(59, 13, 13, 0.4);
+}
+
+.page-content .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(122, 28, 28, 0.12);
+  color: var(--accent);
+}
+.page-content .inbox-tab.active .tab-count {
+  background: #c9a227;
+  color: #3b0d0d;
+}
+
+/* Dark mode */
+:root[data-theme='dark'] .page-content .inbox-tab {
+  background: linear-gradient(145deg, #2f201d, #221715);
+  color: #f0a8a8;
+  box-shadow: 4px 5px 12px rgba(0, 0, 0, 0.45), inset 1px 1px 3px rgba(255, 255, 255, 0.06);
+}
+:root[data-theme='dark'] .page-content .inbox-tab.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  color: #fff;
+}
+:root[data-theme='dark'] .page-content .tab-count {
+  background: rgba(240, 168, 168, 0.15);
+  color: #f0a8a8;
+}
