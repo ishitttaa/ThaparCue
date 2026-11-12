@@ -2412,3 +2412,159 @@ html, body, .glass-card, .navbar, .form-input {
 @keyframes plPop  { to { opacity: 1; transform: scale(1); } }
 @keyframes plRise { to { opacity: 1; transform: translateY(0); } }
 @keyframes plFill { to { transform: scaleX(1); } }
+
+/* ── MOBILE: CTA band neeche tak, tab bar ke liye jagah ── */
+@media (max-width: 900px) {
+  .landing-cta-band {
+    margin-bottom: 0;
+    padding-bottom: 96px; /* tab bar ke peeche text na chhupe */
+  }
+
+  /* Toggle tab bar ke upar, kone me */
+  .theme-toggle {
+    bottom: 76px;
+    right: 12px;
+  }
+}
+
+/* ── LANDING (bina login): tab bar hai hi nahi, extra jagah hatao ── */
+@media (max-width: 900px) {
+  body:has(.landing-page),
+  body:has(.landing-page) #root {
+    padding-bottom: 0 !important;
+    margin-bottom: 0 !important;
+  }
+
+  body:has(.landing-page) .landing-cta-band {
+    padding-bottom: var(--space-8);
+  }
+
+  body:has(.landing-page) .theme-toggle {
+    bottom: 16px;
+    right: 12px;
+  }
+}
+
+/* ── LANDING: neeche ki extra jagah hatao ── */
+.landing-page {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+:has(> .landing-page) {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: 0 !important;
+}
+.landing-cta-band {
+  margin-bottom: 0 !important;
+}
+
+/* ── LANDING MOBILE: tab bar (login) ke liye jagah, band maroon hi rahe ── */
+@media (max-width: 900px) {
+  .landing-cta-band,
+  body:has(.landing-page) .landing-cta-band {
+    padding-bottom: 96px !important;
+  }
+
+  .theme-toggle,
+  body:has(.landing-page) .theme-toggle {
+    bottom: 76px !important;
+    right: 12px !important;
+  }
+}
+
+/* ═══════════ MODERATION / REPORTS: tabs ═══════════ */
+.page-content .inbox-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 var(--space-6);
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid rgba(201, 162, 39, 0.35);
+}
+
+.page-content .inbox-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(145deg, #ffffff, #f1e9e4);
+  color: var(--accent);
+  font: inherit;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow:
+    4px 5px 12px rgba(122, 28, 28, 0.14),
+    -3px -3px 9px rgba(255, 255, 255, 0.9),
+    inset 1px 1px 3px rgba(255, 255, 255, 0.9);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+.page-content .inbox-tab:hover { transform: translateY(-2px); }
+.page-content .inbox-tab:active { transform: scale(0.97); }
+
+.page-content .inbox-tab.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  color: #fff;
+  box-shadow:
+    5px 6px 14px rgba(94, 20, 20, 0.35),
+    inset 2px 2px 6px rgba(255, 255, 255, 0.22),
+    inset -3px -3px 7px rgba(59, 13, 13, 0.4);
+}
+
+.page-content .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: rgba(122, 28, 28, 0.12);
+  color: var(--accent);
+}
+.page-content .inbox-tab.active .tab-count {
+  background: #c9a227;
+  color: #3b0d0d;
+}
+
+/* Dark mode */
+:root[data-theme='dark'] .page-content .inbox-tab {
+  background: linear-gradient(145deg, #2f201d, #221715);
+  color: #f0a8a8;
+  box-shadow: 4px 5px 12px rgba(0, 0, 0, 0.45), inset 1px 1px 3px rgba(255, 255, 255, 0.06);
+}
+:root[data-theme='dark'] .page-content .inbox-tab.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  color: #fff;
+}
+:root[data-theme='dark'] .page-content .tab-count {
+  background: rgba(240, 168, 168, 0.15);
+  color: #f0a8a8;
+}
+
+/* ── SELECT dropdowns: custom arrow, kinare se andar ── */
+.explore-filters select,
+.form-select {
+  -webkit-appearance: none;
+  appearance: none;
+  padding-right: 44px !important;
+  cursor: pointer;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%237a1c1c' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 14px;
+}
+
+/* Dark mode me arrow halka pink */
+:root[data-theme='dark'] .explore-filters select,
+:root[data-theme='dark'] .form-select {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f0a8a8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
