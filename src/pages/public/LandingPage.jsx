@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import useLandingAnimations from '../../hooks/useLandingAnimations';
 import useSpotlight from '../../hooks/useSpotlight';
 import HeroChatDemo from '../../components/HeroChatDemo';
+import { useEffect, useState } from 'react';
+import { getTotalUsers } from '../../services/userStats';
 
 const FEATURES = [
   {
@@ -47,6 +49,32 @@ function Words({ text, start = 0, className = '' }) {
 }
 
 export default function LandingPage() {
+  const [totalUsers, setTotalUsers] = useState(null);
+
+useEffect(() => {
+  let active = true;
+
+  const fetchUsers = async () => {
+    try {
+      const count = await getTotalUsers();
+
+      if (active) {
+        setTotalUsers(count);
+      }
+    } catch (error) {
+      console.error('Could not fetch user count:', error);
+    }
+  };
+
+  fetchUsers();
+
+  const interval = setInterval(fetchUsers, 30000);
+
+  return () => {
+    active = false;
+    clearInterval(interval);
+  };
+}, []);
   const root = useLandingAnimations();
   useSpotlight();
 
@@ -91,13 +119,24 @@ export default function LandingPage() {
       {/* ── STATS ── */}
       <section className="landing-stats-strip">
         <div className="container landing-stats">
-          {STATS.map((s) => (
-            <div key={s.label} className="landing-stat">
-              <span className="landing-stat-val font-display">{s.val}</span>
-              <span className="landing-stat-label text-muted">{s.label}</span>
-            </div>
-          ))}
+
+      <div className="landing-stat">
+        <span className="landing-stat-val font-display">
+          {totalUsers === null ? '—' : totalUsers.toLocaleString('en-IN')}
+        </span>
+        <span className="landing-stat-label text-muted">
+          Registered Students
+        </span>
+      </div>
+
+      {STATS.slice(1).map((s) => (
+        <div key={s.label} className="landing-stat">
+          <span className="landing-stat-val font-display">{s.val}</span>
+          <span className="landing-stat-label text-muted">{s.label}</span>
         </div>
+  ))}
+
+</div>
       </section>
 
       {/* ── FEATURES ── */}
