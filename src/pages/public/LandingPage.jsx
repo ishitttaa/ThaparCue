@@ -64,8 +64,7 @@ export default function LandingPage() {
           </span>
           <h1 className="landing-title font-display">
             <Words text="Learn from seniors who've" />
-            <br />
-            <Words text="been exactly where you are" start={4} className="hero-shimmer" />
+            <Words text="been exactly where you are" start={4} className="hero-shimmer" /> {/* 👈 <br /> removed */}
           </h1>
           <p className="landing-subtitle text-secondary">
             ThaparCue connects you with verified seniors who've taken your courses,
