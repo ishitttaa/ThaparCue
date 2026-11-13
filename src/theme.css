@@ -2864,3 +2864,73 @@ html, body, .glass-card, .navbar, .form-input {
   background: linear-gradient(145deg, #2a2021, #1e1718);
   color: #e8c55a;
 }
+
+/* ── LANDING HERO: headline + CTA alignment ── */
+.landing-title {
+  font-size: clamp(2.2rem, 3.6vw, 3.1rem);
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.landing-ctas {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 28px;
+}
+.landing-ctas .btn {
+  min-width: 200px;
+  justify-content: center;
+}
+
+.landing-hero-content > .text-muted {
+  margin-top: 14px;
+}
+
+.landing-hero {
+  align-items: center;
+}
+
+/* Mobile filter layout */
+@media (max-width: 600px) {
+  .filter-container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+    box-sizing: border-box;
+  }
+
+  .filter-container select {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 600px) {
+  .explore-controls,
+  .explore-filters {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .explore-controls .explore-filters {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+  }
+
+  .explore-filters input,
+  .explore-filters select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+    box-sizing: border-box !important;
+  }
+}
