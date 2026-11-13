@@ -2558,3 +2558,24 @@ html, body, .glass-card, .navbar, .form-input {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f0a8a8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
+
+/* ── LOGIN: neeche ki extra jagah hatao, page poori height le ── */
+body:has(.login-page),
+body:has(.login-page) #root {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+:has(> .login-page) {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: 0 !important;
+}
+.login-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Login pe toggle kone me neeche (tab bar nahi hai) */
+body:has(.login-page) .theme-toggle {
+  bottom: 16px !important;
+}
