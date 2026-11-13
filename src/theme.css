@@ -1714,7 +1714,7 @@ html { scroll-behavior: smooth; }
 
 /* Card ke neeche trust line */
 .login-container::after {
-  content: '🔒  Sirf verified @thapar.edu students ke liye';
+  content: '🔒  Only for verified @thapar.edu students';
   margin-top: var(--space-5);
   font-size: var(--text-xs);
   letter-spacing: 0.02em;
