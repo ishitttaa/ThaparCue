@@ -3,6 +3,7 @@ import useSmoothScroll from '../../hooks/useSmoothScroll'
 import useInteractions from '../../hooks/useInteractions'
 import useNavbarFX from '../../hooks/useNavbarFX'
 import usePageTransition from '../../hooks/usePageTransition'
+import useModalEsc from '../../hooks/useModalEsc'
 
 export default function BackgroundFX() {
   const glowRef = useRef(null)
@@ -11,6 +12,7 @@ export default function BackgroundFX() {
   useInteractions(glowRef)
   useNavbarFX()
   usePageTransition()
+  useModalEsc()
 
   return (
     <>
