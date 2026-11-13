@@ -30,8 +30,8 @@ const STEPS = [
 
 const STATS = [
   { val: '15+', label: 'Verified Seniors' },
-  { val: '8', label: 'Core Courses' },
-  { val: '20+', label: 'Skills Covered' },
+  { val: '650+', label: 'Courses Covered' },
+  { val: '500+', label: 'Skills Covered' },
   { val: '200+', label: 'Interactions' },
 ];
 
@@ -75,7 +75,6 @@ export default function LandingPage() {
             <Link to="/login" className="btn btn-primary btn-lg">
               Get Started
             </Link>
-            
           </div>
           <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-3)' }}>
             Use your @thapar.edu email to get started.
