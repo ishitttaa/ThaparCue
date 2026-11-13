@@ -2908,3 +2908,29 @@ html, body, .glass-card, .navbar, .form-input {
     box-sizing: border-box;
   }
 }
+
+@media (max-width: 600px) {
+  .explore-controls,
+  .explore-filters {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .explore-controls .explore-filters {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+  }
+
+  .explore-filters input,
+  .explore-filters select {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1 1 100% !important;
+    box-sizing: border-box !important;
+  }
+}
