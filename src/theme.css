@@ -2568,3 +2568,299 @@ html, body, .glass-card, .navbar, .form-input {
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23f0a8a8' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 }
+
+/* ═══════════ DARK MODE v2: charcoal + gold (Halloween fix) ═══════════ */
+:root[data-theme='dark'] {
+  --bg-base: #0e1014;
+  --bg-surface: #151920;
+  --bg-elevated: #1c2128;
+  --bg-card: #171b22;
+  --text-primary: #eceef2;
+  --text-secondary: #aeb5c1;
+  --text-muted: #7d8695;
+  --text-accent: #e8c55a;
+  --accent: #e8c55a;
+  --accent-glow: rgba(232, 197, 90, 0.2);
+  --border: rgba(232, 197, 90, 0.22);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-bright: rgba(232, 197, 90, 0.5);
+  scrollbar-color: #3a424f #151920;
+}
+
+/* Page background: neutral */
+:root[data-theme='dark'],
+:root[data-theme='dark'] html,
+:root[data-theme='dark'] body,
+:root[data-theme='dark'] #root,
+:root[data-theme='dark'] .landing-page,
+:root[data-theme='dark'] .page-content,
+:root[data-theme='dark'] .explore-page {
+  background: #0e1014 !important;
+}
+:root[data-theme='dark'] .blob-bg {
+  background: linear-gradient(135deg, #0e1014, #12151b) !important;
+}
+:root[data-theme='dark'] .blob-bg span { opacity: 0.16 !important; }
+
+/* Cards aur boxes */
+:root[data-theme='dark'] .glass-card,
+:root[data-theme='dark'] .landing-step,
+:root[data-theme='dark'] .request-card,
+:root[data-theme='dark'] .profile-section,
+:root[data-theme='dark'] .explore-controls,
+:root[data-theme='dark'] .explore-filters,
+:root[data-theme='dark'] .modal-box,
+:root[data-theme='dark'] .login-card,
+:root[data-theme='dark'] .skills-detail-panel {
+  background: linear-gradient(160deg, #1b2027 0%, #151920 100%);
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.45),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.05);
+}
+
+/* Inputs */
+:root[data-theme='dark'] .form-input,
+:root[data-theme='dark'] .form-select,
+:root[data-theme='dark'] .explore-filters input,
+:root[data-theme='dark'] .explore-filters select,
+:root[data-theme='dark'] .chat-reply-input {
+  background: #11141a;
+  box-shadow:
+    inset 3px 3px 8px rgba(0, 0, 0, 0.5),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.03);
+}
+:root[data-theme='dark'] select option { background: #151920; color: #eceef2; }
+
+/* Chhote boxes aur chat */
+:root[data-theme='dark'] .profile-stat,
+:root[data-theme='dark'] .insight-item,
+:root[data-theme='dark'] .hero-msg-them,
+:root[data-theme='dark'] .chat-messages,
+:root[data-theme='dark'] .chat-bubble-them {
+  background: #1c2128;
+}
+
+/* Buttons, tags, tabs: neutral base, gold text */
+:root[data-theme='dark'] .btn-secondary,
+:root[data-theme='dark'] .tag,
+:root[data-theme='dark'] .skills-category-tabs .tag,
+:root[data-theme='dark'] .topic-btn,
+:root[data-theme='dark'] .page-content .inbox-tab {
+  background: linear-gradient(145deg, #222831, #1a1f26);
+  color: #c9cfd9;
+}
+:root[data-theme='dark'] .btn-secondary,
+:root[data-theme='dark'] .btn-ghost { color: #e8c55a; }
+
+/* Selected states: maroon + white */
+:root[data-theme='dark'] .skills-category-tabs .tag.active,
+:root[data-theme='dark'] .topic-btn.active,
+:root[data-theme='dark'] .page-content .inbox-tab.active {
+  background: linear-gradient(145deg, #9b2c2c, #6b1717);
+  color: #fff;
+}
+:root[data-theme='dark'] .page-content .tab-count {
+  background: rgba(232, 197, 90, 0.16);
+  color: #e8c55a;
+}
+
+/* Headings: pink nahi, off-white */
+:root[data-theme='dark'] .landing-section-header h2,
+:root[data-theme='dark'] .login-form-title,
+:root[data-theme='dark'] .explore-header h1,
+:root[data-theme='dark'] .page-header h1,
+:root[data-theme='dark'] .section-header-row h2,
+:root[data-theme='dark'] .section-title,
+:root[data-theme='dark'] .quick-action-label,
+:root[data-theme='dark'] .profile-card h1,
+:root[data-theme='dark'] .profile-card h2,
+:root[data-theme='dark'] .modal-box h2,
+:root[data-theme='dark'] .skills-detail-panel h2,
+:root[data-theme='dark'] .request-person h3,
+:root[data-theme='dark'] .course-detail-header h1,
+:root[data-theme='dark'] .login-logo {
+  color: #f2f3f5;
+}
+/* Numbers: gold */
+:root[data-theme='dark'] .stat-value,
+:root[data-theme='dark'] .profile-stat-val { color: #e8c55a; }
+
+/* Badges: dark pe padhne layak */
+:root[data-theme='dark'] .badge-accent { color: #e8c55a; }
+:root[data-theme='dark'] .badge-success,
+:root[data-theme='dark'] .status-badge.accepted { color: #34d399; }
+:root[data-theme='dark'] .badge-warning,
+:root[data-theme='dark'] .status-badge.pending { color: #fbbf24; }
+:root[data-theme='dark'] .badge-danger,
+:root[data-theme='dark'] .status-badge.rejected { color: #f87171; }
+:root[data-theme='dark'] .login-hint { color: #e8c55a; }
+
+/* Dropdown arrow gold */
+:root[data-theme='dark'] .explore-filters select,
+:root[data-theme='dark'] .form-select {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23e8c55a' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+}
+
+/* Skeleton aur scrollbar */
+:root[data-theme='dark'] .skeleton { background: #1c2128; }
+:root[data-theme='dark'] ::-webkit-scrollbar-track { background: #151920; }
+:root[data-theme='dark'] ::-webkit-scrollbar-thumb { background: #3a424f; border-color: #151920; }
+
+/* ═══════════ DARK MODE v3: warm ink + ivory + gold + maroon ═══════════ */
+:root[data-theme='dark'] {
+  --bg-base: #110d0e;
+  --bg-surface: #181213;
+  --bg-elevated: #211a1b;
+  --bg-card: #1a1415;
+  --text-primary: #f4ede6;
+  --text-secondary: #c8bcb4;
+  --text-muted: #8f847d;
+  --text-accent: #e8c55a;
+  --accent: #e8c55a;
+  --accent-glow: rgba(232, 197, 90, 0.2);
+  --border: rgba(232, 197, 90, 0.2);
+  --border-subtle: rgba(232, 197, 90, 0.12);
+  --border-bright: rgba(232, 197, 90, 0.5);
+  scrollbar-color: #5e1414 #181213;
+}
+
+:root[data-theme='dark'],
+:root[data-theme='dark'] html,
+:root[data-theme='dark'] body,
+:root[data-theme='dark'] #root,
+:root[data-theme='dark'] .landing-page,
+:root[data-theme='dark'] .page-content,
+:root[data-theme='dark'] .explore-page {
+  background: #110d0e !important;
+}
+
+/* Background glow: light mode jaisa, maroon + gold */
+:root[data-theme='dark'] .blob-bg {
+  background: linear-gradient(135deg, #110d0e, #150f10) !important;
+}
+:root[data-theme='dark'] .blob-bg span { opacity: 0.35 !important; filter: blur(120px) !important; }
+:root[data-theme='dark'] .blob-bg span:nth-child(1) { background: rgba(122, 28, 28, 0.55) !important; }
+:root[data-theme='dark'] .blob-bg span:nth-child(2) { background: rgba(201, 162, 39, 0.28) !important; }
+:root[data-theme='dark'] .blob-bg span:nth-child(3) { background: rgba(122, 28, 28, 0.3) !important; }
+
+/* Navbar: gehra wine */
+:root[data-theme='dark'] .navbar { background: rgba(74, 15, 16, 0.92); }
+:root[data-theme='dark'] .navbar.navbar-scrolled { background: rgba(54, 10, 11, 0.95); }
+
+/* Cards: warm charcoal + gold hairline */
+:root[data-theme='dark'] .glass-card,
+:root[data-theme='dark'] .landing-step,
+:root[data-theme='dark'] .request-card,
+:root[data-theme='dark'] .profile-section,
+:root[data-theme='dark'] .explore-controls,
+:root[data-theme='dark'] .explore-filters,
+:root[data-theme='dark'] .modal-box,
+:root[data-theme='dark'] .login-card,
+:root[data-theme='dark'] .skills-detail-panel {
+  background: linear-gradient(160deg, #221a1b 0%, #181213 100%);
+  border: 1px solid rgba(232, 197, 90, 0.14);
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.5),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.04);
+}
+:root[data-theme='dark'] .glass-card:hover {
+  border-color: rgba(232, 197, 90, 0.4);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(232, 197, 90, 0.15);
+}
+
+/* Welcome banner: light mode ki tarah khaas, wine gradient */
+:root[data-theme='dark'] .dashboard-welcome {
+  background: linear-gradient(135deg, #5e1414 0%, #7a1c1c 60%, #4a0f10 100%) !important;
+  border: none;
+  border-left: 5px solid #c9a227;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.5);
+}
+:root[data-theme='dark'] .dashboard-welcome h1 { color: #fff; }
+:root[data-theme='dark'] .dashboard-welcome .text-secondary { color: rgba(255, 255, 255, 0.8); }
+:root[data-theme='dark'] .dashboard-welcome .stat-label { color: rgba(255, 255, 255, 0.75); }
+
+/* Inputs */
+:root[data-theme='dark'] .form-input,
+:root[data-theme='dark'] .form-select,
+:root[data-theme='dark'] .explore-filters input,
+:root[data-theme='dark'] .explore-filters select,
+:root[data-theme='dark'] .chat-reply-input {
+  background: #130e0f;
+}
+
+/* Chhote boxes, chat */
+:root[data-theme='dark'] .profile-stat,
+:root[data-theme='dark'] .insight-item,
+:root[data-theme='dark'] .hero-msg-them,
+:root[data-theme='dark'] .chat-messages,
+:root[data-theme='dark'] .chat-bubble-them {
+  background: #211a1b;
+}
+
+/* Buttons, tags, tabs */
+:root[data-theme='dark'] .btn-secondary,
+:root[data-theme='dark'] .tag,
+:root[data-theme='dark'] .skills-category-tabs .tag,
+:root[data-theme='dark'] .topic-btn,
+:root[data-theme='dark'] .page-content .inbox-tab {
+  background: linear-gradient(145deg, #2a2021, #1e1718);
+  color: #d9cdc4;
+}
+:root[data-theme='dark'] .btn-secondary,
+:root[data-theme='dark'] .btn-ghost { color: #e8c55a; }
+
+/* Headings: ivory, section line gold */
+:root[data-theme='dark'] .landing-section-header h2,
+:root[data-theme='dark'] .login-form-title,
+:root[data-theme='dark'] .explore-header h1,
+:root[data-theme='dark'] .page-header h1,
+:root[data-theme='dark'] .section-header-row h2,
+:root[data-theme='dark'] .section-title,
+:root[data-theme='dark'] .profile-card h1,
+:root[data-theme='dark'] .profile-card h2,
+:root[data-theme='dark'] .modal-box h2,
+:root[data-theme='dark'] .skills-detail-panel h2,
+:root[data-theme='dark'] .request-person h3,
+:root[data-theme='dark'] .course-detail-header h1,
+:root[data-theme='dark'] .login-logo {
+  color: #f4ede6;
+}
+:root[data-theme='dark'] .quick-action-label { color: #e8c55a; }
+:root[data-theme='dark'] .quick-action-card:hover { background: #5e1414; }
+:root[data-theme='dark'] .quick-action-card:hover .quick-action-label { color: #fff; }
+
+/* Footer / CTA: pehle jaisa maroon rahe */
+:root[data-theme='dark'] .landing-cta-band {
+  background: linear-gradient(135deg, #3b0d0d 0%, #5e1414 100%);
+}
+
+/* Dark: page containers transparent, taaki beech mein alag box na dikhe */
+:root[data-theme='dark'] #root,
+:root[data-theme='dark'] .landing-page,
+:root[data-theme='dark'] .page-content,
+:root[data-theme='dark'] .explore-page,
+:root[data-theme='dark'] .inbox-page {
+  background: transparent !important;
+}
+
+/* ── ModalShell (skills / courses popup): dark mode ── */
+:root { --modal-bg: #ffffff; }
+:root[data-theme='dark'] { --modal-bg: #1a1415; --accent-dim: rgba(232, 197, 90, 0.14); }
+
+:root[data-theme='dark'] .modal-shell-backdrop {
+  background: rgba(8, 4, 5, 0.72) !important;
+}
+:root[data-theme='dark'] .modal-shell-panel {
+  border: 1px solid rgba(232, 197, 90, 0.2);
+  border-top: 4px solid #c9a227;
+  color: var(--text-primary);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
+}
+:root[data-theme='dark'] .modal-shell-panel h2 { color: #f4ede6; }
+:root[data-theme='dark'] .modal-shell-panel button[type='button'] { color: var(--text-primary); }
+:root[data-theme='dark'] .modal-shell-panel .tag {
+  background: linear-gradient(145deg, #2a2021, #1e1718);
+  color: #e8c55a;
+}
