@@ -2619,3 +2619,115 @@ body:has(.login-page) .theme-toggle {
   border-radius: 999px;
 }
 ::-webkit-scrollbar-track { background: transparent; }
+
+/* ═══════════ DARK MODE v2: charcoal + gold, no muddy brown ═══════════ */
+:root[data-theme='dark'] {
+  --bg-base: #0f0b0c;
+  --bg-surface: #181214;
+  --bg-elevated: #1f1719;
+  --bg-card: #181214;
+  --text-primary: #f6eeee;
+  --text-secondary: #cdbfc0;
+  --text-muted: #948789;
+  --accent: #f2b5b5;
+  --border: rgba(255, 255, 255, 0.12);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-bright: rgba(232, 197, 90, 0.55);
+}
+
+:root[data-theme='dark'],
+:root[data-theme='dark'] body,
+:root[data-theme='dark'] #root {
+  background: #0f0b0c !important;
+}
+:root[data-theme='dark'] .blob-bg { background: #0f0b0c !important; }
+:root[data-theme='dark'] .blob-bg span { opacity: 0.14 !important; }
+
+/* Navbar: gehra wine, bhoora nahi */
+:root[data-theme='dark'] .navbar {
+  background: rgba(74, 18, 22, 0.92);
+  border-bottom: 2px solid rgba(232, 197, 90, 0.85);
+}
+:root[data-theme='dark'] .navbar.navbar-scrolled { background: rgba(58, 14, 18, 0.95); }
+
+/* Cards: charcoal + patla border, koi halo nahi */
+:root[data-theme='dark'] .glass-card,
+:root[data-theme='dark'] .profile-section,
+:root[data-theme='dark'] .profile-card,
+:root[data-theme='dark'] .request-card,
+:root[data-theme='dark'] .landing-step,
+:root[data-theme='dark'] .explore-controls,
+:root[data-theme='dark'] .explore-filters,
+:root[data-theme='dark'] .modal-box,
+:root[data-theme='dark'] .login-card,
+:root[data-theme='dark'] .skills-detail-panel {
+  background: linear-gradient(160deg, #1c1517 0%, #151011 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+:root[data-theme='dark'] .glass-card:hover {
+  border-color: rgba(232, 197, 90, 0.45);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+/* Andar ke chhote boxes: card se thode gehre, alag dikhein */
+:root[data-theme='dark'] .profile-stat,
+:root[data-theme='dark'] .insight-item,
+:root[data-theme='dark'] .chat-messages {
+  background: #0f0b0c;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Buttons */
+:root[data-theme='dark'] .btn-secondary,
+:root[data-theme='dark'] .btn-ghost {
+  background: #231a1c;
+  color: #f3dede;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: none;
+}
+:root[data-theme='dark'] .btn-secondary:hover,
+:root[data-theme='dark'] .btn-ghost:hover {
+  background: #2b2022;
+  border-color: rgba(232, 197, 90, 0.5);
+}
+
+/* Logout / danger: ab saaf padhne layak */
+:root[data-theme='dark'] .btn-danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ff9a9a;
+  border: 1px solid rgba(255, 138, 138, 0.45);
+  box-shadow: none;
+}
+:root[data-theme='dark'] .btn-danger:hover { background: rgba(239, 68, 68, 0.22); }
+
+/* Tags, badges: halo hatao, border do */
+:root[data-theme='dark'] .tag,
+:root[data-theme='dark'] .badge {
+  background: #231a1c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+:root[data-theme='dark'] .badge-success { background: rgba(52, 211, 153, 0.12); color: #6ee7b7; border-color: rgba(52, 211, 153, 0.35); }
+:root[data-theme='dark'] .badge-warning { background: rgba(251, 191, 36, 0.12); color: #fcd34d; border-color: rgba(251, 191, 36, 0.35); }
+
+/* Inputs */
+:root[data-theme='dark'] .form-input,
+:root[data-theme='dark'] .form-select,
+:root[data-theme='dark'] .explore-filters input,
+:root[data-theme='dark'] .explore-filters select {
+  background-color: #0f0b0c;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+  color: var(--text-primary);
+}
+
+/* Headings: gulabi ki jagah halka safed, gold underline wahi */
+:root[data-theme='dark'] .section-title,
+:root[data-theme='dark'] .profile-card h1,
+:root[data-theme='dark'] .profile-card h2,
+:root[data-theme='dark'] .section-header-row h2,
+:root[data-theme='dark'] .landing-section-header h2 { color: #f8e9e9; }
+:root[data-theme='dark'] .explore-header h1,
+:root[data-theme='dark'] .page-header h1 { color: #f2b5b5; }
