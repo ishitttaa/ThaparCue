@@ -76,15 +76,10 @@ export default function LandingPage() {
             <Link to="/login" className="btn btn-primary btn-lg">
               Get Started
             </Link>
-            <button
-              className="btn btn-secondary btn-lg"
-              onClick={demoLogin}
-            >
-              Try Demo Login
-            </button>
+            
           </div>
           <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginTop: 'var(--space-3)' }}>
-            Use your @thapar.edu email or click demo to explore instantly
+            Use your @thapar.edu email to get started.
           </p>
         </div>
 
