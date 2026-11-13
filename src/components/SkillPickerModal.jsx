@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { LEVELS } from '../lib/skillLevels';
 
 const MAX_SHOWN = 150;
@@ -97,7 +98,7 @@ export default function SkillPickerModal({
 
   const total = mine.length + customSkills.length;
 
-  return (
+  return createPortal(
     <div
       className="modal-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
@@ -105,9 +106,9 @@ export default function SkillPickerModal({
       <div
         className="modal-box"
         style={{
-          width: 'min(680px, 94vw)',
-          maxHeight: '92vh',
-          overflowY: 'auto',
+          width: 'min(560px, 94vw)',
+          maxHeight: '80vh',
+          overflow: 'hidden',
           display: 'flex',
           flexDirection: 'column',
           gap: 'var(--space-3)',
@@ -119,6 +120,7 @@ export default function SkillPickerModal({
             justifyContent: 'space-between',
             alignItems: 'flex-start',
             gap: 'var(--space-3)',
+            flexShrink: 0,
           }}
         >
           <div>
@@ -126,7 +128,7 @@ export default function SkillPickerModal({
               Select your skills
             </h2>
             <p className="text-muted" style={{ fontSize: 'var(--text-sm)', marginTop: 4 }}>
-              Tap a skill to add it, then set how well you know it. Can't find yours? Type it and add it.
+              Tap a skill to add it, then set your level. Can't find yours? Type it and add it.
             </p>
           </div>
           <button type="button" className="btn btn-primary btn-sm" onClick={onClose}>
@@ -135,13 +137,13 @@ export default function SkillPickerModal({
         </div>
 
         {total > 0 && (
-          <div>
+          <div style={{ flexShrink: 0 }}>
             <p className="text-muted" style={{ fontSize: 'var(--text-xs)', marginBottom: 6 }}>
               Your skills ({total})
             </p>
             <div
               style={{
-                maxHeight: 190,
+                maxHeight: 110,
                 overflowY: 'auto',
                 border: '1px solid rgba(128,128,128,0.25)',
                 borderRadius: 'var(--radius-md)',
@@ -212,7 +214,7 @@ export default function SkillPickerModal({
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap', flexShrink: 0 }}>
           {TABS.map((t) => (
             <button
               key={t.value}
@@ -228,7 +230,7 @@ export default function SkillPickerModal({
           ))}
         </div>
 
-        <div style={{ display: 'grid', gap: 'var(--space-2)' }}>
+        <div style={{ display: 'grid', gap: 'var(--space-2)', flexShrink: 0 }}>
           <input
             className="form-input"
             placeholder="Search skills… e.g. python, public speaking"
@@ -257,22 +259,24 @@ export default function SkillPickerModal({
             className="btn btn-secondary"
             disabled={busy}
             onClick={handleAddCustom}
-            style={{ textAlign: 'left' }}
+            style={{ textAlign: 'left', flexShrink: 0 }}
           >
             + Add "{typed}" as your own skill
           </button>
         )}
 
         {(localError || error) && (
-          <p role="alert" style={{ color: '#f87171', fontSize: 'var(--text-sm)' }}>
+          <p role="alert" style={{ color: '#f87171', fontSize: 'var(--text-sm)', flexShrink: 0 }}>
             {localError || error}
           </p>
         )}
 
+        {/* List: 264px (6 rows) tak, chhoti screen pe khud sikud jaati hai */}
         <div
           style={{
-            height: 'min(260px, 32vh)',
-            minHeight: 160,
+            flex: '1 1 264px',
+            minHeight: 132,
+            maxHeight: 264,
             overflowY: 'auto',
             border: '1px solid rgba(128,128,128,0.25)',
             borderRadius: 'var(--radius-md)',
@@ -333,12 +337,13 @@ export default function SkillPickerModal({
           )}
         </div>
 
-        <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>
+        <p className="text-muted" style={{ fontSize: 'var(--text-xs)', flexShrink: 0 }}>
           {filtered.length > MAX_SHOWN
             ? `Showing first ${MAX_SHOWN} of ${filtered.length}. Search or pick a category to narrow down.`
             : `${filtered.length} skills`}
         </p>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

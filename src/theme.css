@@ -2593,3 +2593,29 @@ body:has(.login-page) .theme-toggle {
   appearance: none;
   padding-right: 44px;
 }
+
+/* ── MODAL FIX: page ka transform animation ke baad na rahe ── */
+.page-content,
+.explore-page,
+.inbox-page {
+  animation: fadeUp 400ms ease backwards;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+/* ── SCROLLBAR: ▲▼ arrows hatao, patla aur clean ── */
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #9b2c2c, #7a1c1c);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-track { background: transparent; }
