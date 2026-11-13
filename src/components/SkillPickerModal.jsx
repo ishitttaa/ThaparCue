@@ -1,7 +1,7 @@
-
 import { useMemo, useState } from 'react';
 import { LEVELS } from '../lib/skillLevels';
 import ModalShell from './ModalShell';
+import useLockBodyScroll from '../hooks/useLockBodyScroll';
 
 const MAX_SHOWN = 150;
 
@@ -49,6 +49,8 @@ export default function SkillPickerModal({
   error = '',
   busy = false,
 }) {
+  useLockBodyScroll(); // 👈 NAYI LINE: modal khula hai to peeche ka page lock
+
   const [tab, setTab] = useState('all');
   const [category, setCategory] = useState('All');
   const [query, setQuery] = useState('');
@@ -338,6 +340,7 @@ export default function SkillPickerModal({
           height: 'min(260px, 32vh)',
           minHeight: 160,
           overflowY: 'auto',
+          overscrollBehavior: 'contain',
           border: '1px solid rgba(128,128,128,0.25)',
           borderRadius: 'var(--radius-md)',
         }}
