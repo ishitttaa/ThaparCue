@@ -47,7 +47,6 @@ function Words({ text, start = 0, className = '' }) {
 }
 
 export default function LandingPage() {
-  const { demoLogin } = useAuth();
   const root = useLandingAnimations();
   useSpotlight();
 
