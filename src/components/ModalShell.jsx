@@ -1,4 +1,3 @@
-
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -35,6 +34,7 @@ export default function ModalShell({
 
   return createPortal(
     <div
+      className="modal-shell-backdrop"
       role="presentation"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) {
@@ -53,6 +53,7 @@ export default function ModalShell({
       }}
     >
       <div
+        className="modal-shell-panel"
         ref={panelRef}
         role="dialog"
         aria-modal="true"
@@ -66,7 +67,7 @@ export default function ModalShell({
           zIndex: 10000,
           display: 'flex',
           flexDirection: 'column',
-          background: '#ffffff',
+          background: 'var(--modal-bg, #ffffff)',
           borderRadius: 20,
           borderTop: '4px solid #c9a227',
           boxShadow: '0 24px 60px rgba(0, 0, 0, 0.35)',
