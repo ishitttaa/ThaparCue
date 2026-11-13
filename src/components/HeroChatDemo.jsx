@@ -74,9 +74,9 @@ export default function HeroChatDemo() {
   return (
     <div className="hero-card glass-card spot hc-card" aria-hidden="true">
       <div className="hero-card-row">
-        <div className="avatar-placeholder avatar-md" style={{ fontSize: '0.85rem' }}>RM</div>
+        <div className="avatar-placeholder avatar-md" style={{ fontSize: '0.85rem' }}>SG</div>
         <div>
-          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Roopanshi Marwaha · COE 3rd Year</p>
+          <p style={{ fontWeight: 600, fontSize: 'var(--text-sm)' }}>Stuti Gupta · COE 3rd Year</p>
           <p className="text-muted" style={{ fontSize: 'var(--text-xs)' }}>System Design · OS · DSA</p>
         </div>
         <span className="badge badge-success" style={{ marginLeft: 'auto' }}>94 score</span>
