@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import useLockBodyScroll from '../hooks/useLockBodyScroll'; // 👈 NAYA
 
 export default function ModalShell({
   title,
@@ -8,14 +9,13 @@ export default function ModalShell({
   footer,
   children,
 }) {
+  useLockBodyScroll(); // 👈 NAYA: peeche ka page lock
+
   const panelRef = useRef(null);
   const closeRef = useRef(onClose);
   closeRef.current = onClose;
 
   useEffect(() => {
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
     panelRef.current?.focus();
 
     const onKey = (e) => {
@@ -27,7 +27,6 @@ export default function ModalShell({
     document.addEventListener('keydown', onKey);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', onKey);
     };
   }, []);
@@ -50,6 +49,7 @@ export default function ModalShell({
         alignItems: 'center',
         justifyContent: 'center',
         padding: 'var(--space-4)',
+        overscrollBehavior: 'contain',
       }}
     >
       <div
@@ -107,6 +107,7 @@ export default function ModalShell({
             flex: '1 1 auto',
             minHeight: 0,
             overflowY: 'auto',
+            overscrollBehavior: 'contain', // 👈 NAYA: scroll peeche leak nahi hoga
             padding: '0 var(--space-5) var(--space-4)',
           }}
         >
