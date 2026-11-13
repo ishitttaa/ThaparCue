@@ -128,9 +128,9 @@ src/
 
 ## 👩‍💻 Contributors
 
-- **Roopanshi Marwaha**
-- **Tripti**
 - **Ishita Rajput**
+- **Tripti**
+- **Roopanshi Marwaha**
 
 ---
 
