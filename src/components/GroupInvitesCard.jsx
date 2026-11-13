@@ -11,8 +11,8 @@ export default function GroupInvitesCard() {
         respond.mutate(
             { inviteId, accept },
             {
-                onSuccess: () => toast.success(accept ? 'Group join ho gaya!' : 'Invite decline kiya'),
-                onError: (err) => toast.error(err.message || 'Invite ka jawab nahi diya ja saka'),
+                onSuccess: () => toast.success(accept ? 'Group joined!' : 'Invite declined'),
+                onError: (err) => toast.error(err.message || 'Invite response could not be sent'),
             }
         );
 
