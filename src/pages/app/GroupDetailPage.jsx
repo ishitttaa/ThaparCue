@@ -135,9 +135,9 @@ export default function GroupDetailPage() {
         },
         onError: (err) => {
           if (err.code === '23505') {
-            toast.error('Ye student already invited hai');
+            toast.error(' student already invited ');
           } else {
-            toast.error(err.message || 'Invite nahi bheja ja saka');
+            toast.error(err.message || 'Invite cannot be sent');
           }
         },
       }
