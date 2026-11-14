@@ -2,9 +2,13 @@
 
 ### Find someone who has already been where you are.
 
+🔗 **Live Demo:** [thapar-cue.vercel.app](https://thapar-cue.vercel.app)
+
 ThaparCue is a campus knowledge sharing and peer guidance platform built exclusively for Thapar students. It connects students with relevant peers and seniors based on courses, skills, academic experience, and a transparent weighted matching algorithm.
 
 Students can discover mentors, request guidance, chat in real time, and share their experiences — all in one place.
+
+> **Note:** Login is restricted to `@thapar.edu` email accounts, so the live demo can only be accessed by Thapar students.
 
 ---
 
