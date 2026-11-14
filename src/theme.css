@@ -2934,3 +2934,34 @@ html, body, .glass-card, .navbar, .form-input {
     box-sizing: border-box !important;
   }
 }
+
+/* ── LOGIN: lock line hatao + neeche ki patti hatao (final) ── */
+.login-container::after,
+.login-container::before {
+  content: none !important;
+  display: none !important;
+}
+
+.login-page {
+  min-height: 100vh !important;
+  min-height: 100dvh !important;
+  background:
+    radial-gradient(rgba(122, 28, 28, 0.13) 1.5px, transparent 1.5px) 0 0 / 24px 24px,
+    radial-gradient(circle at 88% 10%, rgba(201, 162, 39, 0.22) 0%, transparent 38%),
+    radial-gradient(circle at 60% 100%, rgba(122, 28, 28, 0.14) 0%, transparent 45%),
+    var(--bg-base) !important;
+}
+
+/* Page ke aas-paas ka wrapper extra jagah na le */
+body:has(.login-page),
+body:has(.login-page) #root,
+:has(> .login-page) {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+  min-height: 0 !important;
+}
+
+/* Patti agar phir bhi bache, to body ka background login jaisa hi ho */
+body:has(.login-page) {
+  background: var(--bg-base) !important;
+}
