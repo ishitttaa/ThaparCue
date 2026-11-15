@@ -67,7 +67,7 @@ export default function OnboardingPage() {
             id="name-input"
             type="text"
             className="form-input"
-            placeholder="Roopanshi Marwaha"
+            placeholder="Shanaya Kapoor"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
